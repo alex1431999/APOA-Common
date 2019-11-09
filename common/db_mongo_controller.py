@@ -26,12 +26,12 @@ class DBMongoController():
         """
         self.db = self.client[db_name]
 
-    def set_collections(self, keyword_collection_name='keyword', crawl_collection_name='crawl'):
+    def set_collections(self, keyword_collection_name='keyword', crawl_twitter_collection_name='crawl_twitter'):
         """
         Set custom collection names
         """
         self.keyword_collection = self.db[keyword_collection_name]
-        self.crawl_collection = self.db[crawl_collection_name]
+        self.crawl_twitter_collection = self.db[crawl_twitter_collection_name]
 
     def add_keyword(self, keyword_string, language):
         """
