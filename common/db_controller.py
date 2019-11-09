@@ -15,6 +15,9 @@ class DBController():
         self.client = MongoClient(connection_string)
         self.db = self.client[db_name]
 
+        # By default use the default collection names
+        self.set_collections()
+
     def set_db(self, db_name):
         """
         Set the current database
@@ -23,10 +26,17 @@ class DBController():
         """
         self.db = self.client[db_name]
 
+    def set_collections(self, keyword_collection_name='keyword', crawl_collection_name='crawl'):
+        """
+        Set custom collection names
+        """
+        self.keyword_collection = self.db[keyword_collection_name]
+        self.crawl_collection = self.db[crawl_collection_name]
+
     def __str__(self):
         return 'Currently connected to "{}" using database "{}"'.format(self.client.HOST, self.db.name)
 
 
 if __name__ == '__main__':
     db_controller = DBController()
-    print(db_controller)
+    print(db_controller.keyword_collection)
