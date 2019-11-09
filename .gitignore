@@ -1,2 +1,5 @@
 # Virtual environemt
 venv/
+
+# Python specific folders
+__pycache__/
