@@ -4,7 +4,7 @@ Module to implement the database interaction functionality
 
 from pymongo import MongoClient
 
-class DBController():
+class DBMongoController():
     """
     Class to handle the database interactions
 
@@ -38,5 +38,5 @@ class DBController():
 
 
 if __name__ == '__main__':
-    db_controller = DBController()
-    print(db_controller.keyword_collection)
+    db_mongo_controller = DBMongoController()
+    print(db_mongo_controller.keyword_collection)
