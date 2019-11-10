@@ -123,7 +123,7 @@ class MongoController():
 
         query = { 'tweet_id': tweet_id }
 
-        return self.crawls_twitter_collection.update_one(query, document, upsert=True)
+        return self.crawls_twitter_collection.replace_one(query, document, upsert=True)
 
     def __str__(self):
         return 'Currently connected to "{}" using database "{}"'.format(self.client.HOST, self.db.name)
