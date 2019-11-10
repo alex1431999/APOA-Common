@@ -42,7 +42,7 @@ class MongoController():
 
         # Apply indexes
         # Keywords collection
-        self.keywords_collection.create_index([('keyword', ASCENDING), ('language', ASCENDING)], unique=True)
+        self.keywords_collection.create_index([('keyword_string', ASCENDING), ('language', ASCENDING)], unique=True)
 
         # Crawls Twitter collection
         self.crawls_twitter_collection.create_index([('tweet_id', ASCENDING)], unique=True)
@@ -78,7 +78,7 @@ class MongoController():
         if (language not in config.SUPPORTED_LANGUAGES):
             raise Exception('Unsupported language "{}"'.format(language))
 
-        document = { 'keyword': keyword_string, 'language': language }
+        document = { 'keyword_string': keyword_string, 'language': language }
         return self.keywords_collection.insert_one(document)
 
     def get_keyword(self, keyword_string, language):
@@ -88,7 +88,7 @@ class MongoController():
         :param str keyword_string: The target keyword
         :param str language: The language the keyword is written in
         """
-        query = { 'keyword': keyword_string, 'language': language }
+        query = { 'keyword_string': keyword_string, 'language': language }
         keyword_dict = self.keywords_collection.find_one(query)
         return Keyword(keyword_dict)
 

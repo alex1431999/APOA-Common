@@ -17,9 +17,9 @@ def schema_keyword(collection_name):
     vexpr = {
         '$jsonSchema': {
             'bsonType': 'object',
-            'required': ['keyword', 'language'],
+            'required': ['keyword_string', 'language'],
             'properties': {
-                'keyword': {
+                'keyword_string': {
                     'bsonType': 'string',
                     'description': 'must be a string and is required'
                 },
