@@ -3,3 +3,6 @@ venv/
 
 # Python specific folders
 __pycache__/
+
+# Test file
+playground.py

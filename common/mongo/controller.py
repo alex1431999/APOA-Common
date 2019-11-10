@@ -4,9 +4,9 @@ Module to implement the database interaction functionality
 
 from pymongo import MongoClient, ASCENDING
 
-import schemas
+from common.mongo import schemas
 
-from data_types.keyword import Keyword
+from common.mongo.data_types.keyword import Keyword
 
 class MongoController():
     """
@@ -107,9 +107,3 @@ class MongoController():
 
     def __str__(self):
         return 'Currently connected to "{}" using database "{}"'.format(self.client.HOST, self.db.name)
-
-
-if __name__ == '__main__':
-    db_mongo_controller = MongoController()
-    db_mongo_controller.configure_database()
-    print(db_mongo_controller.get_keyword('test2', 'EN'))
