@@ -82,7 +82,7 @@ class MongoController():
         query = { 'keyword': keyword_string, 'language': language }
         return self.keywords_collection.find_one(query)
 
-    def add_crawl_twitter(self, keyword_id, text, likes, retweets, timestamp):
+    def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timestamp):
         """
         Add a new twitter crawl to the crawl twitter collection
 
@@ -94,6 +94,7 @@ class MongoController():
         """
         document = {
             'keyword_ref': keyword_id,
+            'tweet_id': tweet_id,
             'text': text,
             'likes': likes,
             'retweets': retweets,
