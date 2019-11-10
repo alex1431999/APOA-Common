@@ -6,7 +6,7 @@ from pymongo import MongoClient, ASCENDING
 
 import schemas
 
-class DBMongoController():
+class MongoController():
     """
     Class to handle the database interactions
 
@@ -106,6 +106,6 @@ class DBMongoController():
 
 
 if __name__ == '__main__':
-    db_mongo_controller = DBMongoController()
+    db_mongo_controller = MongoController()
     db_mongo_controller.configure_database()
     print(db_mongo_controller.add_keyword('test2', 'EN'))
