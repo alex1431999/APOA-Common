@@ -13,6 +13,8 @@ def schema_keyword(collection_name):
     Schema and restrictions of the keywords collection
 
     :param str collection_name: The collection name of the keywords collection
+    :return: The query to be inserted into pymongo to enable the schema
+    :rtype: OrderedDict
     """
     vexpr = {
         '$jsonSchema': {
@@ -43,6 +45,8 @@ def schema_crawls_twitter(collection_name):
     Schema and restrictions of the crawls twitter collection
 
     :param str collection_name: The name of the crawls twitter collection
+    :return: The query to be inserted into pymongo to enable the schema
+    :rtype: OrderedDict
     """
     vexpr = {
         '$jsonSchema': {

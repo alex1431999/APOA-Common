@@ -52,6 +52,8 @@ class MongoController():
         Check if a collection exists, if not, add the collection
 
         :param str collection_name: The name of the new collection
+        :return: The created / existing collection
+        :rtype: Collection
         """
         if collection_name not in self.db.list_collection_names():
             return self.db.create_collection(collection_name)
@@ -74,6 +76,8 @@ class MongoController():
 
         :param str keyword_string: The target keyword
         :param str language: The language the keyword is written in
+        :return: The inserted document result
+        :rtype: InsertOneResult
         """
         if (language not in config.SUPPORTED_LANGUAGES):
             raise Exception('Unsupported language "{}"'.format(language))
@@ -87,16 +91,21 @@ class MongoController():
 
         :param str keyword_string: The target keyword
         :param str language: The language the keyword is written in
+        :return: The found keyword
+        :rtype: Keyword or None
         """
         query = { 'keyword_string': keyword_string, 'language': language }
         keyword_dict = self.keywords_collection.find_one(query)
-        return Keyword(keyword_dict)
+        if (keyword_dict):
+            return Keyword(keyword_dict)
+        return None
 
     def get_keyword_batch_cursor(self):
         """
         Get all outdated keywords which are in need of new twitter results
 
-        returns a cursor with batches of size 100
+        :return: A cursor with batches of size 100
+        :rtype: RawBatchCurosor
         """
         cursor = self.keywords_collection.find_raw_batches(no_cursor_timeout=True)
         return cursor
@@ -112,6 +121,8 @@ class MongoController():
         :param int likes: The amount of likes the tweet has received
         :param int retweets: The amount of retweets the tweet has received
         :param date timestamp: The time the tweet was created
+        :return: The update result
+        :rtype: UpdateResult
         """
         document = {
             'keyword_ref': keyword_id,
