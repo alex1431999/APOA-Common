@@ -104,6 +104,7 @@ class MongoController():
     def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timestamp):
         """
         Add a new twitter crawl to the crawl twitter collection
+        If the tweet already exists, update the document
 
         :param ObjectId keyword_id: The id of the target keyword used
         :param str text: The tweet text
@@ -119,7 +120,10 @@ class MongoController():
             'retweets': retweets,
             'timestamp': timestamp,
         }
-        return self.crawls_twitter_collection.insert_one(document)
+
+        query = { 'tweet_id': tweet_id }
+
+        return self.crawls_twitter_collection.update_one(query, document, upsert=True)
 
     def __str__(self):
         return 'Currently connected to "{}" using database "{}"'.format(self.client.HOST, self.db.name)
