@@ -6,6 +6,8 @@ from pymongo import MongoClient, ASCENDING
 
 import schemas
 
+from data_types.keyword import Keyword
+
 class MongoController():
     """
     Class to handle the database interactions
@@ -80,7 +82,8 @@ class MongoController():
         :param str language: The language the keyword is written in
         """
         query = { 'keyword': keyword_string, 'language': language }
-        return self.keywords_collection.find_one(query)
+        keyword_dict = self.keywords_collection.find_one(query)
+        return Keyword(keyword_dict)
 
     def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timestamp):
         """
@@ -109,4 +112,4 @@ class MongoController():
 if __name__ == '__main__':
     db_mongo_controller = MongoController()
     db_mongo_controller.configure_database()
-    print(db_mongo_controller.add_keyword('test2', 'EN'))
+    print(db_mongo_controller.get_keyword('test2', 'EN'))
