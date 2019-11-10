@@ -4,9 +4,9 @@ Module to implement the database interaction functionality
 
 from pymongo import MongoClient, ASCENDING
 
-from common.mongo import schemas
-
 from common.mongo.data_types.keyword import Keyword
+from common.mongo import schemas
+from common import config
 
 class MongoController():
     """
@@ -71,6 +71,9 @@ class MongoController():
         :param str keyword_string: The target keyword
         :param str language: The language the keyword is written in
         """
+        if (language not in config.SUPPORTED_LANGUAGES):
+            raise Exception('Unsupported language "{}"'.format(language))
+
         document = { 'keyword': keyword_string, 'language': language }
         return self.keywords_collection.insert_one(document)
 
