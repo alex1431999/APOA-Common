@@ -107,6 +107,7 @@ class MongoController():
         If the tweet already exists, update the document
 
         :param ObjectId keyword_id: The id of the target keyword used
+        :param long tweet_id: The id of the tweet provided by twitter
         :param str text: The tweet text
         :param int likes: The amount of likes the tweet has received
         :param int retweets: The amount of retweets the tweet has received
