@@ -14,7 +14,7 @@ class Keyword():
         """
         # Initial Data
         self._id = keyword_dict['_id']
-        self.keyword_string = keyword_dict['keyword']
+        self.keyword_string = keyword_dict['keyword_string']
         self.language = keyword_dict['language']
 
     def __str__(self):
