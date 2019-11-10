@@ -47,11 +47,15 @@ def schema_crawls_twitter(collection_name):
     vexpr = {
         '$jsonSchema': {
             'bsonType': 'object',
-            'required': ['keyword_ref', 'text', 'likes', 'retweets', 'timestamp'],
+            'required': ['keyword_ref', 'tweet_id', 'text', 'likes', 'retweets', 'timestamp'],
             'properties': {
                 'keyword_ref': {
                     'bsonType': 'objectId',
                     'description': 'must be an objectId and is required'
+                },
+                'tweet_id': {
+                    'bsonType': 'string',
+                    'description': 'must be a string and is required'
                 },
                 'text': {
                     'bsonType': 'string',

@@ -41,7 +41,11 @@ class MongoController():
         self.db.command(schemas.schema_crawls_twitter(self.crawls_twitter_collection.name))
 
         # Apply indexes
+        # Keywords collection
         self.keywords_collection.create_index([('keyword', ASCENDING), ('language', ASCENDING)], unique=True)
+
+        # Crawls Twitter collection
+        self.crawls_twitter_collection.create_index(['tweet_id', ASCENDING], unique=True)
 
     def create_collection_if_not_exists(self, collection_name):
         """
