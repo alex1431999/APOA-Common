@@ -45,7 +45,7 @@ class MongoController():
         self.keywords_collection.create_index([('keyword', ASCENDING), ('language', ASCENDING)], unique=True)
 
         # Crawls Twitter collection
-        self.crawls_twitter_collection.create_index(['tweet_id', ASCENDING], unique=True)
+        self.crawls_twitter_collection.create_index([('tweet_id', ASCENDING)], unique=True)
 
     def create_collection_if_not_exists(self, collection_name):
         """
@@ -91,6 +91,15 @@ class MongoController():
         query = { 'keyword': keyword_string, 'language': language }
         keyword_dict = self.keywords_collection.find_one(query)
         return Keyword(keyword_dict)
+
+    def get_keyword_batch_cursor(self):
+        """
+        Get all outdated keywords which are in need of new twitter results
+
+        returns a cursor with batches of size 100
+        """
+        cursor = self.keywords_collection.find_raw_batches(no_cursor_timeout=True)
+        return cursor
 
     def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timestamp):
         """
