@@ -54,8 +54,8 @@ def schema_crawls_twitter(collection_name):
                     'description': 'must be an objectId and is required'
                 },
                 'tweet_id': {
-                    'bsonType': 'string',
-                    'description': 'must be a string and is required'
+                    'bsonType': 'int',
+                    'description': 'must be a int and is required'
                 },
                 'text': {
                     'bsonType': 'string',
