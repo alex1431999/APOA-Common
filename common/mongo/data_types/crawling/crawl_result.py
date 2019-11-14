@@ -37,6 +37,10 @@ class CrawlResult():
         """
         Calculate the score if a processor was provided to calculate the score
 
+        This function expects that the processor has a function called "process"
+        with the parameters "text: string, keyword_string: string" to be able
+        to proecess the data
+
         :param obj processor: The processor used to calculate the score
         :param bool force: Force the recalculation of a score
         """
