@@ -97,7 +97,7 @@ class MongoController():
         query = { 'keyword_string': keyword_string, 'language': language }
         keyword_dict = self.keywords_collection.find_one(query)
         if (keyword_dict):
-            return Keyword(keyword_dict)
+            return Keyword.mongo_result_to_keyword(keyword_dict)
         return None
 
     def get_keyword_batch_cursor(self):
