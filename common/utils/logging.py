@@ -53,4 +53,5 @@ class Logger():
 
         # Close log file and return
         return log_file.close()
-      
+
+DEFAULT_LOGGER = Logger()
