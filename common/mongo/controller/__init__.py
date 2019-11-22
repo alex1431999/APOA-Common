@@ -42,6 +42,11 @@ class MongoController():
         get_crawl_twitter_by_id,
     )
 
+    # Users
+    from common.mongo.controller.queries_user import (
+        add_user,
+    )
+
     def __init__(self, connection_string='mongodb://localhost:27017', db_name='default_db'):
         self.client = MongoClient(connection_string)
         self.db = self.client[db_name]
