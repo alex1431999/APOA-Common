@@ -5,6 +5,8 @@ This module handles all user database interactions
 from passlib.hash import pbkdf2_sha512
 from datetime import datetime
 
+from common.mongo.data_types.user import User
+
 def add_user(self, username, password, is_hashed=False):
     """
     Hashes input password and adds new user to the database
@@ -25,4 +27,19 @@ def add_user(self, username, password, is_hashed=False):
     }
     
     return self.users_collection.insert_one(document)
+
+def get_user(self, username):
+    """
+    Get a user from the database
+
+    :param str username: The username of the user
+    """
+    query = { 'username': username }
+
+    user_dict = self.users_collection.find_one(query)
+
+    if user_dict:
+        return User.mongo_result_to_user(user_dict)
+    else:
+        return None
     
