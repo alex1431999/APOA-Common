@@ -30,14 +30,14 @@ class MongoController():
     )
 
     # Keywords
-    from common.mongo.controller.keyword_queries import (
+    from common.mongo.controller.queries_keyword import (
         add_keyword,
         get_keyword,
         get_keyword_batch_cursor,
     )
 
     # Twitter
-    from common.mongo.controller.crawl_twitter_queries import (
+    from common.mongo.controller.queries_crawl_twitter import (
         add_crawl_twitter,
         get_crawl_twitter_by_id,
     )
