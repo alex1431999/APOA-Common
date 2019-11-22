@@ -8,7 +8,7 @@ This way the database iteself will have to deal with validation.
 # Use to order the query dict
 from collections import OrderedDict
 
-def schema_keyword(collection_name):
+def schema_keywords(collection_name):
     """
     Schema and restrictions of the keywords collection
 
@@ -76,6 +76,42 @@ def schema_crawls_twitter(collection_name):
                 'timestmap': {
                     'bsonType': 'date',
                     'description': 'must be a date and is required'
+                }
+            }
+        }
+    }
+    query = [
+        ('collMod', collection_name),
+        ('validator', vexpr),
+        ('validationLevel', 'moderate')
+    ]
+    query = OrderedDict(query)
+    return query
+
+def schema_users(collection_name):
+    """
+    Schema and restrictions of the user collection
+
+    :param str collection_name: The name of the crawls twitter collection
+    :return: The query to be inserted into pymongo to enable the schema
+    :rtype: OrderedDict
+    """
+    vexpr = {
+        '$jsonSchema': {
+            'bsonType': 'object',
+            'required': ['username', 'password', 'created_at'],
+            'properties': {
+                'username': {
+                    'bsonType': 'string',
+                    'description': 'must be string and is required'
+                },
+                'password': {
+                    'bsonType': 'string',
+                    'description': 'must be string and is required'
+                },
+                'created_at': {
+                    'bsonType': 'date',
+                    'description': 'must be date and is required'
                 }
             }
         }
