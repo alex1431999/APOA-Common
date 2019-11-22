@@ -45,6 +45,7 @@ class MongoController():
     # Users
     from common.mongo.controller.queries_user import (
         add_user,
+        get_user,
     )
 
     def __init__(self, connection_string='mongodb://localhost:27017', db_name='default_db'):
