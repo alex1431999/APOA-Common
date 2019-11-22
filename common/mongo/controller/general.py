@@ -21,8 +21,9 @@ def configure_database(self):
     is freshly created
     """
     # Apply schemas
-    self.db.command(schemas.schema_keyword(self.keywords_collection.name))
+    self.db.command(schemas.schema_keywords(self.keywords_collection.name))
     self.db.command(schemas.schema_crawls_twitter(self.crawls_twitter_collection.name))
+    self.db.command(schemas.schema_users(self.users_collection.name))
 
     # Apply indexes
     # Keywords collection
@@ -30,6 +31,9 @@ def configure_database(self):
 
     # Crawls Twitter collection
     self.crawls_twitter_collection.create_index([('tweet_id', ASCENDING)], unique=True)
+
+    # Users collection
+    self.users_collection.create_index([('username', ASCENDING)], unique=True)
 
 def create_collection_if_not_exists(self, collection_name):
     """
@@ -44,12 +48,19 @@ def create_collection_if_not_exists(self, collection_name):
     else:
         return self.db[collection_name]
 
-def set_collections(self, keywords_collection_name='keywords', crawls_twitter_collection_name='crawls_twitter'):
+def set_collections(
+        self, 
+        keywords_collection_name='keywords', 
+        crawls_twitter_collection_name='crawls_twitter',
+        users_collection_name='users' 
+    ):
     """
     Set custom collection names
 
     :param str keywords_collection_name: The name of the keyword collection
     :param str crawls_twitter_collection_name: The name of the twitter crawl collection
+    :param str users_collection_name: The name of the users collection
     """
     self.keywords_collection = self.create_collection_if_not_exists(keywords_collection_name)
     self.crawls_twitter_collection = self.create_collection_if_not_exists(crawls_twitter_collection_name)
+    self.users_collection = self.create_collection_if_not_exists(users_collection_name)

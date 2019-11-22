@@ -22,7 +22,7 @@ class Keyword():
     @staticmethod
     def mongo_result_to_keyword(mongo_result):
         """
-        Conver a mongo dict to a Keyword object
+        Convert a mongo dict to a Keyword object
 
         :param dict mongo_result: The dict returned by a mongo query
         """
