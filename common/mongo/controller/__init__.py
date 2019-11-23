@@ -33,6 +33,7 @@ class MongoController():
     from common.mongo.controller.queries_keyword import (
         add_keyword,
         get_keyword,
+        get_keywords_user,
         get_keyword_batch_cursor,
     )
 

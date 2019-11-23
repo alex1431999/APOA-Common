@@ -32,5 +32,15 @@ class Keyword():
             mongo_result['language']
         )
 
+    def to_json(self):
+        """
+        Return a json representation of yourself
+        """
+        return {
+            '_id': self._id,
+            'keyword_string': self.keyword_string,
+            'language': self.language,
+        }
+
     def __str__(self):
         return "{} ({})".format(self.keyword_string, self.language)

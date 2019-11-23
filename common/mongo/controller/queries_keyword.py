@@ -49,6 +49,25 @@ def get_keyword(self, keyword_string, language, user=None):
         return Keyword.mongo_result_to_keyword(keyword_dict)
     return None
 
+def get_keywords_user(self, username, cast=False):
+    """
+    Get the keywords of a particular user
+
+    :param str username: The username of the user
+    :param boolean cast: If True, cast all results to be of type Keyword
+    :return: All keywords that belong to a user
+    :rtype: List<Keyword> / List<dict>
+    """
+    query = { 'users': username }
+    projection = { '_id': 1, 'keyword_string': 1, 'language': 1 }
+
+    keywords = list(self.keywords_collection.find(query, projection))
+    
+    if cast: # You might want have all of the keywords casted
+        keywords = [Keyword.mongo_result_to_keyword(mongo_result) for mongo_result in keywords]
+    
+    return keywords
+
 def get_keyword_batch_cursor(self):
     """
     Get all outdated keywords which are in need of new twitter results
