@@ -31,10 +31,13 @@ class MongoController():
 
     # Keywords
     from common.mongo.controller.queries_keyword import (
+        _set_deleted_flag,
         add_keyword,
         get_keyword,
         get_keywords_user,
         get_keyword_batch_cursor,
+        get_keyword_by_id,
+        delete_keyword,
     )
 
     # Twitter
