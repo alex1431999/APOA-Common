@@ -12,22 +12,17 @@ def _set_deleted_flag(self, _id):
     This will usually be called after a keyword was altered
 
     :param ObjectId _id: The ID of the target keyword
-    :return: If the deleted flag was set
-    :rtype: boolean
     """
     if _id is not ObjectId:
         _id = ObjectId(_id)
 
     keyword = self.get_keyword_by_id(_id, cast=True)
-    
-    if len(keyword.users) == 0:
-        query = { '_id': _id }
-        update = { '$set': { 'deleted': True } }
-        
-        self.keywords_collection.update_one(query, update)
-        return True
 
-    return False
+    query = { '_id': _id }
+    update = { '$set': { 'deleted': keyword.deleted } }
+    
+    self.keywords_collection.update_one(query, update)
+
 
 
 def add_keyword(self, keyword_string, language, username):
@@ -50,7 +45,12 @@ def add_keyword(self, keyword_string, language, username):
     if keyword_dict: # Add username to users of keyword
         query = { '_id': keyword_dict['_id'] }
         update = { '$addToSet': {'users': username } }
-        return self.keywords_collection.update_one(query, update)
+        
+        update_result =  self.keywords_collection.update_one(query, update)
+
+        self._set_deleted_flag(keyword_dict['_id'])
+
+        return update_result
     else: # Create a new keyword
         document = { 
             'keyword_string': keyword_string, 
@@ -58,6 +58,7 @@ def add_keyword(self, keyword_string, language, username):
             'users': [username], 
             'deleted': False,
         }
+
         return self.keywords_collection.insert_one(document)
 
 def get_keyword(self, keyword_string, language, username=None):
