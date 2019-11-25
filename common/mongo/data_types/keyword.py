@@ -35,6 +35,10 @@ class Keyword():
             mongo_result['users'],
         )
 
+    @property
+    def deleted(self):
+        return len(self.users) == 0
+
     def to_json(self):
         """
         Return a json representation of yourself
