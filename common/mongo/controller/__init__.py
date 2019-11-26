@@ -41,6 +41,11 @@ class MongoController():
         delete_keyword,
     )
 
+    # Crawls
+    from common.mongo.controller.queries_crawls import (
+        get_unprocessed_crawls,
+    )
+
     # Twitter
     from common.mongo.controller.queries_crawls_twitter import (
         add_crawl_twitter,
