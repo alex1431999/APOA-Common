@@ -41,7 +41,7 @@ class MongoController():
     )
 
     # Twitter
-    from common.mongo.controller.queries_crawl_twitter import (
+    from common.mongo.controller.queries_crawls_twitter import (
         add_crawl_twitter,
         get_crawl_twitter_by_id,
     )
