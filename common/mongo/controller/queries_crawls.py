@@ -11,6 +11,8 @@ Those attributes are:
 """
 import sys
 
+from bson import ObjectId
+
 def get_unprocessed_crawls(self, limit=sys.maxsize):
     """
     Get all the crawls which don't have a score yet
@@ -57,3 +59,27 @@ def get_unprocessed_crawls(self, limit=sys.maxsize):
             break
     
     return crawls
+
+def set_score_crawl(self, _id, score):
+    """
+    Looks through each crawl collection for the crawl and sets the score
+
+    You could be more efficient by defining what type of crawl you are manipulating
+    and already pointing towards the right collection (skipping all other collections)
+    which can be implemented if performance ever becomes an issue here.
+
+    :param ObjectId _id: The id of the crawl
+    :param int score: The score to be set
+    """
+    if _id is not ObjectId:
+        _id = ObjectId(_id)
+
+    query = { '_id': _id }
+    update = { '$set': { 'score': score } }
+
+    for crawls_collection in self.crawls_collections:
+        update_result = crawls_collection.update_one(query, update)
+
+        # Skip the rest of the collections if you found the crawl result
+        if update_result.modified_count > 0:
+            break
