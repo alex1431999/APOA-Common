@@ -64,3 +64,20 @@ def set_collections(
     self.keywords_collection = self.create_collection_if_not_exists(keywords_collection_name)
     self.crawls_twitter_collection = self.create_collection_if_not_exists(crawls_twitter_collection_name)
     self.users_collection = self.create_collection_if_not_exists(users_collection_name)
+
+@property
+def crawls_collections(self):
+    """
+    Gather all the crawl collections in one array.
+    All of them have similar properties and therefore it's useful to group
+    them together for the processor. 
+
+    If a new crawl collection is added to the system, make sure to add that 
+    collection to this list such that the processor will also process that collection.
+
+    :return: All crawl collections
+    :rtype: List <Collection>
+    """
+    return [
+        self.crawls_twitter_collection,
+    ]

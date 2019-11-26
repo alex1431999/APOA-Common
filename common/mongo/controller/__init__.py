@@ -27,6 +27,7 @@ class MongoController():
         configure_database, 
         create_collection_if_not_exists, 
         set_collections,
+        crawls_collections,
     )
 
     # Keywords
@@ -38,6 +39,12 @@ class MongoController():
         get_keyword_batch_cursor,
         get_keyword_by_id,
         delete_keyword,
+    )
+
+    # Crawls
+    from common.mongo.controller.queries_crawls import (
+        get_unprocessed_crawls,
+        set_score_crawl,
     )
 
     # Twitter
