@@ -22,7 +22,7 @@ class MongoController():
     """
 
     # General
-    from common.mongo.controller.general import (
+    from common.mongo.controller.setup import (
         set_db, 
         configure_database, 
         create_collection_if_not_exists, 
