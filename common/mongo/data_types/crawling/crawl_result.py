@@ -2,11 +2,13 @@
 This module provides the parent class of all crawl results
 """
 
+from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
+
 class CrawlResult():
     """
     Parent class which all crawl results inherit from
     """
-    def __init__(self, _id, keyword_string, language, text, crawl_type, timestamp, processor=None):
+    def __init__(self, _id, keyword_string, language, text, timestamp, crawl_type=CrawlTypes.NEUTRAL.value, processor=None):
         """
         Initialise the crawl result object and try to calculate scores in case
         a processor was added as well
@@ -15,8 +17,8 @@ class CrawlResult():
         :param str keyword_string: The target keyword that was used to generate the crawl result
         :param str language: The language the text is written in
         :param str text: The actual text that is supposed to be evaluated
-        :param CrawlType crawl_type: The type of crawl
         :param datetime timestamp: The timestamp of creation
+        :param CrawlType crawl_type: The type of crawl
         :param GoogleCloudLanguageProcessor processor: The NLP processor used to evaluate the text
         """
         # Attributes
