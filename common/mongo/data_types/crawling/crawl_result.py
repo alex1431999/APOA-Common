@@ -64,5 +64,15 @@ class CrawlResult():
         """
         return self.score
 
+    @staticmethod
+    def mongo_result_to_crawl_result(mongo_result):
+        return CrawlResult(
+            mongo_result['_id'],
+            mongo_result['keyword_string'],
+            mongo_result['language'],
+            mongo_result['text'],
+            mongo_result['timestamp']
+        )
+
     def __str__(self):
         return '<{}> {} --> Type: {}, Score: {}'.format(self._id, self.keyword_string, self.crawl_type, self.score)
