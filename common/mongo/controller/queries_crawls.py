@@ -13,13 +13,16 @@ import sys
 
 from bson import ObjectId
 
-def get_unprocessed_crawls(self, limit=sys.maxsize):
+from common.mongo.data_types.crawling.crawl_result import CrawlResult
+
+def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     """
     Get all the crawls which don't have a score yet
 
     :param int limit: The max amount of returned results
+    :param bool cast: If true, cast all results to CrawlResult
     :return: Unprocessed crawls
-    :rtype: List<dict>
+    :rtype: List<CrawlResult> or List<dict>
     """
     pipeline = [
         {
@@ -46,15 +49,21 @@ def get_unprocessed_crawls(self, limit=sys.maxsize):
             '$project': {
                 'keyword_string': '$keyword.keyword_string',
                 'language': '$keyword.language',
-                'text': 1
+                'text': 1,
+                'timestamp': 1,
             }
         }
     ]
 
     crawls = []
     for crawls_collection in self.crawls_collections:
-        crawls += list(crawls_collection.aggregate(pipeline))
+        crawls_current = list(crawls_collection.aggregate(pipeline))
         
+        if cast:
+            crawls_current = [CrawlResult.mongo_result_to_crawl_result(crawl) for crawl in crawls_current]
+        
+        crawls += crawls_current
+
         if len(crawls) >= limit:
             break
     
