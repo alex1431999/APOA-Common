@@ -3,6 +3,7 @@ All twitter crawl result database functionality is defined in this module
 """
 
 from common.mongo.data_types.crawling.crawl_results.twitter_result import TwitterResult
+from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
 def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timestamp):
     """
@@ -25,11 +26,12 @@ def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timesta
         'likes': likes,
         'retweets': retweets,
         'timestamp': timestamp,
+        'crawl_type': CrawlTypes.TWITTER.value,
     }
 
     query = { 'tweet_id': tweet_id }
 
-    return self.crawls_twitter_collection.replace_one(query, document, upsert=True)
+    return self.crawls_collection.replace_one(query, document, upsert=True)
 
 
 def get_crawl_twitter_by_id(self, tweet_id):
@@ -81,7 +83,7 @@ def get_crawl_twitter_by_id(self, tweet_id):
     ]
 
     try:
-        tweet_dict = self.crawls_twitter_collection.aggregate(pipeline).next()
+        tweet_dict = self.crawls_collection.aggregate(pipeline).next()
         return TwitterResult.mongo_result_to_twitter_result(tweet_dict)
     except: # The tweet was probably not found
         return None

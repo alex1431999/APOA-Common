@@ -55,17 +55,10 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
         }
     ]
 
-    crawls = []
-    for crawls_collection in self.crawls_collections:
-        crawls_current = list(crawls_collection.aggregate(pipeline))
-        
-        if cast:
-            crawls_current = [CrawlResult.mongo_result_to_crawl_result(crawl) for crawl in crawls_current]
-        
-        crawls += crawls_current
+    crawls = list(self.crawls_collection.aggregate(pipeline))
 
-        if len(crawls) >= limit:
-            break
+    if cast:
+        crawls = [CrawlResult.mongo_result_to_crawl_result(crawl) for crawl in crawls]
     
     return crawls
 
@@ -86,9 +79,6 @@ def set_score_crawl(self, _id, score):
     query = { '_id': _id }
     update = { '$set': { 'score': score } }
 
-    for crawls_collection in self.crawls_collections:
-        update_result = crawls_collection.update_one(query, update)
+    update_result = self.crawls_collection.update_one(query, update)
 
-        # Skip the rest of the collections if you found the crawl result
-        if update_result.modified_count > 0:
-            break
+    return update_result

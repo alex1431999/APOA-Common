@@ -48,42 +48,34 @@ def schema_keywords(collection_name):
     query = OrderedDict(query)
     return query
 
-def schema_crawls_twitter(collection_name):
+def schema_crawls(collection_name):
     """
-    Schema and restrictions of the crawls twitter collection
+    Schema and restrictions of the crawls collection
 
-    :param str collection_name: The name of the crawls twitter collection
+    :param str collection_name: The name of the crawls collection
     :return: The query to be inserted into pymongo to enable the schema
     :rtype: OrderedDict
     """
     vexpr = {
         '$jsonSchema': {
             'bsonType': 'object',
-            'required': ['keyword_ref', 'tweet_id', 'text', 'likes', 'retweets', 'timestamp'],
+            'required': ['keyword_ref', 'text', 'timestamp', 'crawl_type'],
             'properties': {
                 'keyword_ref': {
                     'bsonType': 'objectId',
                     'description': 'must be an objectId and is required'
                 },
-                'tweet_id': {
-                    'bsonType': 'long',
-                    'description': 'must be a long and is required'
-                },
                 'text': {
                     'bsonType': 'string',
                     'description': 'must be a string and is required'
                 },
-                'likes': {
-                    'bsonType': 'int',
-                    'description': 'must be an int and is required'
-                },
-                'retweets': {
-                    'bsonType': 'int',
-                    'description': 'must be an int and is required'
-                },
                 'timestmap': {
                     'bsonType': 'date',
                     'description': 'must be a date and is required'
+                },
+                'crawl_type': {
+                    'bsonType': 'string',
+                    'description': 'must be a string and is required'
                 }
             }
         }

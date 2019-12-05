@@ -27,7 +27,6 @@ class MongoController():
         configure_database, 
         create_collection_if_not_exists, 
         set_collections,
-        crawls_collections,
     )
 
     # Keywords

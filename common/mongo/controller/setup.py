@@ -22,15 +22,16 @@ def configure_database(self):
     """
     # Apply schemas
     self.db.command(schemas.schema_keywords(self.keywords_collection.name))
-    self.db.command(schemas.schema_crawls_twitter(self.crawls_twitter_collection.name))
+    self.db.command(schemas.schema_crawls(self.crawls_collection.name))
     self.db.command(schemas.schema_users(self.users_collection.name))
 
     # Apply indexes
     # Keywords collection
     self.keywords_collection.create_index([('keyword_string', ASCENDING), ('language', ASCENDING)], unique=True)
 
-    # Crawls Twitter collection
-    self.crawls_twitter_collection.create_index([('tweet_id', ASCENDING)], unique=True)
+    # Crawls collection
+    self.crawls_collection.create_index([('tweet_id', ASCENDING)], unique=True)
+    self.crawls_collection.create_index([('crawl_type', ASCENDING)])
 
     # Users collection
     self.users_collection.create_index([('username', ASCENDING)], unique=True)
@@ -51,33 +52,16 @@ def create_collection_if_not_exists(self, collection_name):
 def set_collections(
         self, 
         keywords_collection_name='keywords', 
-        crawls_twitter_collection_name='crawls_twitter',
+        crawls_collection_name='crawls',
         users_collection_name='users' 
     ):
     """
     Set custom collection names
 
     :param str keywords_collection_name: The name of the keyword collection
-    :param str crawls_twitter_collection_name: The name of the twitter crawl collection
+    :param str crawls_collection_name: The name of the crawl collection
     :param str users_collection_name: The name of the users collection
     """
     self.keywords_collection = self.create_collection_if_not_exists(keywords_collection_name)
-    self.crawls_twitter_collection = self.create_collection_if_not_exists(crawls_twitter_collection_name)
+    self.crawls_collection = self.create_collection_if_not_exists(crawls_collection_name)
     self.users_collection = self.create_collection_if_not_exists(users_collection_name)
-
-@property
-def crawls_collections(self):
-    """
-    Gather all the crawl collections in one array.
-    All of them have similar properties and therefore it's useful to group
-    them together for the processor. 
-
-    If a new crawl collection is added to the system, make sure to add that 
-    collection to this list such that the processor will also process that collection.
-
-    :return: All crawl collections
-    :rtype: List <Collection>
-    """
-    return [
-        self.crawls_twitter_collection,
-    ]
