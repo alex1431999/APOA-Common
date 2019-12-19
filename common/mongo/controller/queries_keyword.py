@@ -87,7 +87,7 @@ def get_keyword(self, keyword_string, language, username=None, cast=False):
     keyword = self.keywords_collection.find_one(query)
 
     if keyword and cast:
-        keyword = Keyword.mongo_result_to_keyword(keyword)
+        keyword = Keyword.from_dict(keyword)
     
     return keyword
 
@@ -106,7 +106,7 @@ def get_keywords_user(self, username, cast=False):
     keywords = list(self.keywords_collection.find(query, projection))
     
     if cast: # You might want have all of the keywords casted
-        keywords = [Keyword.mongo_result_to_keyword(mongo_result) for mongo_result in keywords]
+        keywords = [Keyword.from_dict(mongo_result) for mongo_result in keywords]
     
     return keywords
 
@@ -131,7 +131,7 @@ def get_keyword_by_id(self, _id, username=None, cast=False):
     keyword = self.keywords_collection.find_one(query)
 
     if cast:
-        keyword = Keyword.mongo_result_to_keyword(keyword)
+        keyword = Keyword.from_dict(keyword)
     
     return keyword
 

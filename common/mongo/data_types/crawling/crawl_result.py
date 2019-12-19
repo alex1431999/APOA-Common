@@ -65,13 +65,21 @@ class CrawlResult():
         return self.score
 
     @staticmethod
-    def mongo_result_to_crawl_result(mongo_result):
+    def from_dict(dict_input):
+        """
+        Cast dict to Crawl Result object
+        
+        :param dict dict_input: The to be casted dict
+        """
+        if not dict_input:
+            return None
+        
         return CrawlResult(
-            mongo_result['_id'],
-            mongo_result['keyword_string'],
-            mongo_result['language'],
-            mongo_result['text'],
-            mongo_result['timestamp']
+            dict_input['_id'],
+            dict_input['keyword_string'],
+            dict_input['language'],
+            dict_input['text'],
+            dict_input['timestamp']
         )
 
     def __str__(self):

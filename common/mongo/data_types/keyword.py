@@ -22,20 +22,20 @@ class Keyword():
         self.users = users
 
     @staticmethod
-    def mongo_result_to_keyword(mongo_result):
+    def from_dict(dict_input):
         """
         Convert a mongo dict to a Keyword object
 
-        :param dict mongo_result: The dict returned by a mongo query
+        :param dict dict_input: The to be casted dict
         """
-        if not mongo_result:
+        if not dict_input:
             return None
 
         return Keyword(
-            mongo_result['_id'],
-            mongo_result['keyword_string'],
-            mongo_result['language'],
-            mongo_result['users'],
+            dict_input['_id'],
+            dict_input['keyword_string'],
+            dict_input['language'],
+            dict_input['users'],
         )
 
     @property

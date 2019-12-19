@@ -29,24 +29,24 @@ class TwitterResult(CrawlResult):
         self.retweets = retweets
 
     @staticmethod
-    def mongo_result_to_twitter_result(mongo_result):
+    def from_dict(dict_input):
         """
         Convert a mongo result into a Twitter Result object
 
-        :param dict mongo_result: The returned dict from a mongo query
+        :param dict dict_input: The to be casted dict
         """
-        if not mongo_result:
+        if not dict_input:
             return None
 
         return TwitterResult(
-            mongo_result['_id'],
-            mongo_result['tweet_id'],
-            mongo_result['keyword_string'],
-            mongo_result['language'],
-            mongo_result['text'],
-            mongo_result['timestamp'],
-            mongo_result['likes'],
-            mongo_result['retweets']
+            dict_input['_id'],
+            dict_input['tweet_id'],
+            dict_input['keyword_string'],
+            dict_input['language'],
+            dict_input['text'],
+            dict_input['timestamp'],
+            dict_input['likes'],
+            dict_input['retweets']
         )
 
     def get_score(self):

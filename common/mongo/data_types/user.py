@@ -23,20 +23,20 @@ class User():
         self.created_at = created_at
 
     @staticmethod
-    def mongo_result_to_user(mongo_result):
+    def from_dict(dict_input):
         """
         Convert a mongo dict to a Keyword object
 
-        :param dict mongo_result: The dict returned by a mongo query
+        :param dict dict_input: The to be casted dict
         """
-        if not mongo_result:
+        if not dict_input:
             return None
 
         return User(
-            mongo_result['_id'],
-            mongo_result['username'],
-            mongo_result['password'],
-            mongo_result['created_at'],
+            dict_input['_id'],
+            dict_input['username'],
+            dict_input['password'],
+            dict_input['created_at'],
         )
 
     def verifiy(self, password_candidate):

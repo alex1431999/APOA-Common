@@ -39,7 +39,7 @@ def get_user(self, username):
     user_dict = self.users_collection.find_one(query)
 
     if user_dict:
-        return User.mongo_result_to_user(user_dict)
+        return User.from_dict(user_dict)
     else:
         return None
     

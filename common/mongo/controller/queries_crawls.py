@@ -30,7 +30,7 @@ def get_crawl_by_id(self, _id, cast=False):
     crawl = self.crawls_collection.find_one(query)
 
     if cast:
-        crawl = CrawlResult.mongo_result_to_crawl_result(crawl)
+        crawl = CrawlResult.from_dict(crawl)
     
     return crawl
 
@@ -77,7 +77,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     crawls = list(self.crawls_collection.aggregate(pipeline))
 
     if cast:
-        crawls = [CrawlResult.mongo_result_to_crawl_result(crawl) for crawl in crawls]
+        crawls = [CrawlResult.from_dict(crawl) for crawl in crawls]
     
     return crawls
 

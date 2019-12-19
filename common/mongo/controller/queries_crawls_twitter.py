@@ -84,6 +84,6 @@ def get_crawl_twitter_by_id(self, tweet_id):
 
     try:
         tweet_dict = self.crawls_collection.aggregate(pipeline).next()
-        return TwitterResult.mongo_result_to_twitter_result(tweet_dict)
+        return TwitterResult.from_dict(tweet_dict)
     except: # The tweet was probably not found
         return None
