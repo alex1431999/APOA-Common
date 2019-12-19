@@ -44,6 +44,7 @@ class MongoController():
     from common.mongo.controller.queries_crawls import (
         get_unprocessed_crawls,
         set_score_crawl,
+        get_crawl_by_id,
     )
 
     # Twitter

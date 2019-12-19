@@ -15,6 +15,25 @@ from bson import ObjectId
 
 from common.mongo.data_types.crawling.crawl_result import CrawlResult
 
+def get_crawl_by_id(self, _id, cast=False):
+    """
+    Find and return a crawl object using its ID
+
+    :param ObjectId _id: The ID of the crawl
+    :param boolean cast: If true, cast the crawl dict to a CrawlResult
+    """
+    if _id is not ObjectId:
+        _id = ObjectId(_id)
+
+    query = { '_id': _id }
+
+    crawl = self.crawls_collection.find_one(query)
+
+    if cast:
+        crawl = CrawlResult.mongo_result_to_crawl_result(crawl)
+    
+    return crawl
+
 def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     """
     Get all the crawls which don't have a score yet
@@ -62,7 +81,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     
     return crawls
 
-def set_score_crawl(self, _id, score):
+def set_score_crawl(self, _id, score, return_object=False):
     """
     Looks through each crawl collection for the crawl and sets the score
 
@@ -72,6 +91,7 @@ def set_score_crawl(self, _id, score):
 
     :param ObjectId _id: The id of the crawl
     :param int score: The score to be set
+    :param boolean return_object: If true return the updated object
     """
     if _id is not ObjectId:
         _id = ObjectId(_id)
