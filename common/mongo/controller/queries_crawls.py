@@ -39,7 +39,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     Get all the crawls which don't have a score yet
 
     :param int limit: The max amount of returned results
-    :param bool cast: If true, cast all results to CrawlResult
+    :param boolean cast: If true, cast all results to CrawlResult
     :return: Unprocessed crawls
     :rtype: List<CrawlResult> or List<dict>
     """
