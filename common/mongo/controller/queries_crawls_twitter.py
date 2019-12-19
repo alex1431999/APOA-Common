@@ -5,7 +5,7 @@ All twitter crawl result database functionality is defined in this module
 from common.mongo.data_types.crawling.crawl_results.twitter_result import TwitterResult
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
-def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timestamp):
+def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timestamp, return_object=False, cast=False):
     """
     Add a new twitter crawl to the crawl twitter collection
     If the tweet already exists, update the document
@@ -16,6 +16,8 @@ def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timesta
     :param int likes: The amount of likes the tweet has received
     :param int retweets: The amount of retweets the tweet has received
     :param date timestamp: The time the tweet was created
+    :param boolean return_object: If true return the updated object
+    :param boolean cast: If true cast the returned object to TwitterResult
     :return: The update result
     :rtype: UpdateResult
     """
@@ -31,14 +33,19 @@ def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timesta
 
     query = { 'tweet_id': tweet_id }
 
-    return self.crawls_collection.replace_one(query, document, upsert=True)
+    update_result = self.crawls_collection.replace_one(query, document, upsert=True)
 
+    if return_object:
+        return self.get_crawl_twitter_by_id(tweet_id)
+    
+    return update_result
 
-def get_crawl_twitter_by_id(self, tweet_id):
+def get_crawl_twitter_by_id(self, tweet_id, cast=False):
     """
     Find a twitter result using the tweet id
 
     :param long tweet_id: The id assigned to the tweet by twitter
+    :param boolean cast: If true cast the returned object to TwitterResult
     :return: The twitter result found
     :rtype: TwitterResult or None
     """
@@ -83,7 +90,11 @@ def get_crawl_twitter_by_id(self, tweet_id):
     ]
 
     try:
-        tweet_dict = self.crawls_collection.aggregate(pipeline).next()
-        return TwitterResult.from_dict(tweet_dict)
+        tweet = self.crawls_collection.aggregate(pipeline).next()
+        
+        if cast:
+            tweet = TwitterResult.from_dict(tweet)
+        
+        return tweet
     except: # The tweet was probably not found
         return None
