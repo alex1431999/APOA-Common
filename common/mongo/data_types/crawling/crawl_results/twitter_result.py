@@ -35,6 +35,9 @@ class TwitterResult(CrawlResult):
 
         :param dict mongo_result: The returned dict from a mongo query
         """
+        if not mongo_result:
+            return None
+
         return TwitterResult(
             mongo_result['_id'],
             mongo_result['tweet_id'],

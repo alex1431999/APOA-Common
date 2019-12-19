@@ -28,6 +28,9 @@ class Keyword():
 
         :param dict mongo_result: The dict returned by a mongo query
         """
+        if not mongo_result:
+            return None
+
         return Keyword(
             mongo_result['_id'],
             mongo_result['keyword_string'],

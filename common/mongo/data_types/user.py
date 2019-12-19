@@ -29,6 +29,9 @@ class User():
 
         :param dict mongo_result: The dict returned by a mongo query
         """
+        if not mongo_result:
+            return None
+
         return User(
             mongo_result['_id'],
             mongo_result['username'],
