@@ -36,7 +36,7 @@ def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timesta
     update_result = self.crawls_collection.replace_one(query, document, upsert=True)
 
     if return_object:
-        return self.get_crawl_twitter_by_id(tweet_id)
+        return self.get_crawl_twitter_by_id(tweet_id, cast)
     
     return update_result
 
