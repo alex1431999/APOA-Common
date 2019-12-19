@@ -81,7 +81,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     
     return crawls
 
-def set_score_crawl(self, _id, score, return_object=False):
+def set_score_crawl(self, _id, score, return_object=False, cast=False):
     """
     Looks through each crawl collection for the crawl and sets the score
 
@@ -92,6 +92,7 @@ def set_score_crawl(self, _id, score, return_object=False):
     :param ObjectId _id: The id of the crawl
     :param int score: The score to be set
     :param boolean return_object: If true return the updated object
+    :param boolean cast: If true cast the returned object to CrawlObject
     """
     if _id is not ObjectId:
         _id = ObjectId(_id)
@@ -100,5 +101,8 @@ def set_score_crawl(self, _id, score, return_object=False):
     update = { '$set': { 'score': score } }
 
     update_result = self.crawls_collection.update_one(query, update)
+
+    if return_object:
+        return self.get_crawl_by_id(_id, cast=cast)
 
     return update_result
