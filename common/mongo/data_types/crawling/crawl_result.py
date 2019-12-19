@@ -44,7 +44,7 @@ class CrawlResult():
         to proecess the data
 
         :param obj processor: The processor used to calculate the score
-        :param bool force: Force the recalculation of a score
+        :param boolean force: Force the recalculation of a score
         """
         if processor:
             if (force or self.score is None):

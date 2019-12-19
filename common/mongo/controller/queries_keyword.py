@@ -25,13 +25,15 @@ def _set_deleted_flag(self, _id):
 
 
 
-def add_keyword(self, keyword_string, language, username):
+def add_keyword(self, keyword_string, language, username, return_object=False, cast=False):
     """
     Add a new keyword document to the database
 
     :param str keyword_string: The target keyword
     :param str language: The language the keyword is written in
     :param str username: The name of the user that is added to the keyword
+    :param boolean return_object: If true return the updated object
+    :param boolean cast: If true cast the returned object to Keyword
     :return: The inserted document result
     :rtype: InsertOneResult / UpdateOneResult
     """
@@ -50,7 +52,7 @@ def add_keyword(self, keyword_string, language, username):
 
         self._set_deleted_flag(keyword_dict['_id'])
 
-        return update_result
+        result = update_result
     else: # Create a new keyword
         document = { 
             'keyword_string': keyword_string, 
@@ -59,15 +61,21 @@ def add_keyword(self, keyword_string, language, username):
             'deleted': False,
         }
 
-        return self.keywords_collection.insert_one(document)
+        result = self.keywords_collection.insert_one(document)
 
-def get_keyword(self, keyword_string, language, username=None):
+    if return_object:
+        result = self.get_keyword(keyword_string, language, username, cast=cast)
+
+    return result
+
+def get_keyword(self, keyword_string, language, username=None, cast=False):
     """
     Get a keyword object from the database
 
     :param str keyword_string: The target keyword
     :param str language: The language the keyword is written in
     :param str username: There might be a username that requested this keyword
+    :param boolean cast: If true, cast the keyword dict to Keyword
     :return: The found keyword
     :rtype: Keyword or None
     """
@@ -76,10 +84,12 @@ def get_keyword(self, keyword_string, language, username=None):
     if username: # If a username was passded
         query['users'] = username # Make sure the username is associated to the keyword
 
-    keyword_dict = self.keywords_collection.find_one(query)
-    if keyword_dict:
-        return Keyword.mongo_result_to_keyword(keyword_dict)
-    return None
+    keyword = self.keywords_collection.find_one(query)
+
+    if keyword and cast:
+        keyword = Keyword.mongo_result_to_keyword(keyword)
+    
+    return keyword
 
 def get_keywords_user(self, username, cast=False):
     """
