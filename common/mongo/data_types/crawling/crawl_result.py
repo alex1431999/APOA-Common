@@ -1,6 +1,9 @@
 """
 This module provides the parent class of all crawl results
 """
+import json
+
+from bson import ObjectId
 
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
@@ -75,12 +78,28 @@ class CrawlResult():
             return None
         
         return CrawlResult(
-            dict_input['_id'],
+            dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
             dict_input['keyword_string'],
             dict_input['language'],
             dict_input['text'],
             dict_input['timestamp']
         )
+
+    def to_json(self):
+        """
+        Cast the object to JSON
+
+        The plain __dict__ function will not cast the _id to string which can
+        be an issue if you are trying to send the object to an API.
+        Furthermore the __dict__ function doesn't actually produce a copy
+        of the object which means that if you edit the dict it will also
+        affect the initial object.
+        """
+        self._id = str(self._id) if type(self._id) is ObjectId else self._id
+        result =  json.loads(json.dumps(self.__dict__))
+        self._id = ObjectId(self._id)
+        return result
+        
 
     def __str__(self):
         return '<{}> {} --> Type: {}, Score: {}'.format(self._id, self.keyword_string, self.crawl_type, self.score)
