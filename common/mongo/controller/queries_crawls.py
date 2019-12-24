@@ -25,11 +25,44 @@ def get_crawl_by_id(self, _id, cast=False):
     if _id is not ObjectId:
         _id = ObjectId(_id)
 
-    query = { '_id': _id }
+    pipeline = [
+        {
+            '$match': {
+                '_id': _id,
+            }
+        },
+        {
+            '$limit': 1,
+        },
+        {
+            '$lookup':
+                {
+                    'from': self.keywords_collection.name,
+                    'localField': 'keyword_ref',
+                    'foreignField': '_id',
+                    'as': 'keyword', 
+                }
+        },
+        {
+            '$unwind': '$keyword'
+        },
+        {
+            '$project': {
+                '_id': 1,
+                'keyword_string': '$keyword.keyword_string',
+                'language': '$keyword.language',
+                'text': 1,
+                'timestamp': 1,
+            }
+        }
+    ]
 
-    crawl = self.crawls_collection.find_one(query)
+    try:
+        crawl = self.crawls_collection.aggregate(pipeline).next()
+    except:
+        crawl = None
 
-    if cast:
+    if cast and crawl:
         crawl = CrawlResult.from_dict(crawl)
     
     return crawl
@@ -66,6 +99,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
         },
         {
             '$project': {
+                '_id': 1,
                 'keyword_string': '$keyword.keyword_string',
                 'language': '$keyword.language',
                 'text': 1,
