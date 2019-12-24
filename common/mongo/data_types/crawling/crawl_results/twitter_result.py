@@ -2,6 +2,8 @@
 This module provides the implementation of the Twitter Crawl result class
 """
 
+from bson import ObjectId
+
 from common.mongo.data_types.crawling.crawl_result import CrawlResult
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
@@ -39,7 +41,7 @@ class TwitterResult(CrawlResult):
             return None
 
         return TwitterResult(
-            dict_input['_id'],
+            dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
             dict_input['tweet_id'],
             dict_input['keyword_string'],
             dict_input['language'],

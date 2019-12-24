@@ -2,6 +2,8 @@
 MongoDb data type
 """
 
+from bson import ObjectId
+
 class Keyword():
     """
     This class carries a keyword result from the mongodb database
@@ -32,7 +34,7 @@ class Keyword():
             return None
 
         return Keyword(
-            dict_input['_id'],
+            dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
             dict_input['keyword_string'],
             dict_input['language'],
             dict_input['users'],
@@ -47,7 +49,7 @@ class Keyword():
         Return a json representation of yourself
         """
         return {
-            '_id': self._id,
+            '_id': self._id if type(self._id) is not ObjectId else str(self._id),
             'keyword_string': self.keyword_string,
             'language': self.language,
             'users': self.users,
