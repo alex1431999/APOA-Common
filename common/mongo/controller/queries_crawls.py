@@ -11,6 +11,7 @@ Those attributes are:
 """
 import sys
 
+from datetime import datetime
 from bson import ObjectId
 
 from common.mongo.data_types.crawling.crawl_result import CrawlResult
@@ -140,3 +141,53 @@ def set_score_crawl(self, _id, score, return_object=False, cast=False):
         return self.get_crawl_by_id(_id, cast=cast)
 
     return update_result
+
+def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
+    """
+    Gather all the crawls belonging to the given keyword id
+    and transform the data such that it can be used to plot a graph
+    using the score.
+
+    You could be more efficient by implementing the Accumulation of the scores piecewise
+    in the mongo query. This seems to be quite the challenge and the for loop is just of O(N).
+    Still an improvement worth making if this function slows down the process.
+
+    :param ObjectId keyword_id: The id of the target keyword
+    :param datetime date_cutoff: Only return plotting data up to that point in time
+    """
+    if keyword_id is not ObjectId:
+        keyword_id = ObjectId(keyword_id)
+
+    # Default date cutoff if none is provided
+    if not date_cutoff:
+        date_cutoff = datetime(1970,1,1)
+    
+    pipeline = [
+        {
+            '$match': {
+                'keyword_ref': keyword_id,
+                'score': { '$exists': True },
+                'timestamp': { '$gte': date_cutoff.isoformat() },
+            },
+        },
+        {
+            '$project': {
+                '_id': 0,
+                'timestamp': 1,
+                'score': 1,
+                'text': 1,
+            },
+        },
+        {
+            '$sort': { 'timestamp': 1 },
+        },
+    ]
+
+    plotting_data = list(self.crawls_collection.aggregate(pipeline))
+
+    # Accumulate scores
+    for i in range(len(plotting_data)):
+        if i > 0:
+            plotting_data[i]['score'] += plotting_data[i-1]['score']
+
+    return plotting_data
