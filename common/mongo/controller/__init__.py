@@ -45,6 +45,7 @@ class MongoController():
         get_unprocessed_crawls,
         set_score_crawl,
         get_crawl_by_id,
+        get_crawls_plotting_data,
     )
 
     # Twitter
