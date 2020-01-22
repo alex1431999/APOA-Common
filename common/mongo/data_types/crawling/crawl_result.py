@@ -11,12 +11,13 @@ class CrawlResult():
     """
     Parent class which all crawl results inherit from
     """
-    def __init__(self, _id, keyword_string, language, text, timestamp, crawl_type=CrawlTypes.NEUTRAL.value, processor=None):
+    def __init__(self, _id, keyword_ref, keyword_string, language, text, timestamp, crawl_type=CrawlTypes.NEUTRAL.value, processor=None):
         """
         Initialise the crawl result object and try to calculate scores in case
         a processor was added as well
 
         :param str id: The unique identifier of the crawl result
+        :param ObjectId keyword_ref: The ID of the keyword the crawl refers to
         :param str keyword_string: The target keyword that was used to generate the crawl result
         :param str language: The language the text is written in
         :param str text: The actual text that is supposed to be evaluated
@@ -26,6 +27,7 @@ class CrawlResult():
         """
         # Attributes
         self._id = _id
+        self.keyword_ref = keyword_ref
         self.keyword_string = keyword_string
         self.language = language
         self.text = text
@@ -79,6 +81,7 @@ class CrawlResult():
         
         return CrawlResult(
             dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
+            dict_input['keyword_ref'],
             dict_input['keyword_string'],
             dict_input['language'],
             dict_input['text'],

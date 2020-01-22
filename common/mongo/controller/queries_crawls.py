@@ -50,6 +50,7 @@ def get_crawl_by_id(self, _id, cast=False):
         {
             '$project': {
                 '_id': 1,
+                'keyword_ref': 1,
                 'keyword_string': '$keyword.keyword_string',
                 'language': '$keyword.language',
                 'text': 1,
@@ -101,6 +102,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
         {
             '$project': {
                 '_id': 1,
+                'keyword_ref': 1,
                 'keyword_string': '$keyword.keyword_string',
                 'language': '$keyword.language',
                 'text': 1,
