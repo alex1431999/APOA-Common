@@ -17,6 +17,7 @@ class Neo4jController():
         :param str password: The password to access the database
         """
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
+        self.session = self.driver.session()
 
     def __execute_query(self, query):
         """
@@ -24,8 +25,7 @@ class Neo4jController():
 
         :param string query: The query to be executed
         """
-        with self.driver.session() as session:
-            session.run(query)
+        self.session.run(query)
 
     def add_keyword(self, keyword):
         """
