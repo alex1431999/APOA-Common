@@ -1,6 +1,7 @@
 """
 All twitter crawl result database functionality is defined in this module
 """
+from bson import ObjectId
 
 from common.mongo.data_types.crawling.crawl_results.twitter_result import TwitterResult
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
@@ -22,7 +23,7 @@ def add_crawl_twitter(self, keyword_id, tweet_id, text, likes, retweets, timesta
     :rtype: UpdateResult
     """
     document = {
-        'keyword_ref': keyword_id,
+        'keyword_ref': keyword_id if type(keyword_id) is ObjectId else ObjectId(keyword_id),
         'tweet_id': tweet_id,
         'text': text,
         'likes': likes,
@@ -98,5 +99,5 @@ def get_crawl_twitter_by_id(self, tweet_id, cast=False):
             tweet = TwitterResult.from_dict(tweet)
         
         return tweet
-    except: # The tweet was probably not found
+    except Exception as ex: # The tweet was probably not found
         return None
