@@ -72,7 +72,8 @@ def get_crawl_twitter_by_id(self, tweet_id, cast=False):
                 'likes': 1,
                 'retweets': 1,
                 'timestamp': 1,
-                'keyword': { '$arrayElemAt': ['$keyword', 0] }
+                'keyword': { '$arrayElemAt': ['$keyword', 0] },
+                'keyword_ref': 1,
             }
         },
         { # Final projection
