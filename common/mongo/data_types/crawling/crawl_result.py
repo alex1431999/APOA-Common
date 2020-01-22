@@ -81,7 +81,7 @@ class CrawlResult():
         
         return CrawlResult(
             dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
-            dict_input['keyword_ref'],
+            dict_input['keyword_ref'] if type(dict_input['keyword_ref']) is ObjectId else ObjectId(dict_input['keyword_ref']),
             dict_input['keyword_string'],
             dict_input['language'],
             dict_input['text'],
