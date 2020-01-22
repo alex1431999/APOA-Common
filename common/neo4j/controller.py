@@ -78,24 +78,24 @@ class Neo4jController():
 
         self.__execute_query(query)
 
-    def add_topic(self, topic_string, language, count, keyword_id):
+    def add_category(self, category_string, language, count, keyword_id):
         """
-        Add a topic to a keyword
+        Add a category to a keyword
 
-        :param str topic_string: The string representation of the topic
-        :param string language: The langauge of the topic
-        :param int count: The amount of times a topic was mentioned in relation to the keyword
-        :param ObjectId keyword_id: The ID of the keyword which the topic is related to
+        :param str category_string: The string representation of the category
+        :param string language: The langauge of the category
+        :param int count: The amount of times a category was mentioned in relation to the keyword
+        :param ObjectId keyword_id: The ID of the keyword which the category is related to
         """
         # Add node if not exists
-        query = 'MERGE (tp:Topic {{ topic_string:"{}", language:"{}" }})'.format(topic_string, language)
+        query = 'MERGE (ca:category {{ category_string:"{}", language:"{}" }})'.format(category_string, language)
 
         self.__execute_query(query)
 
         # Add relationship if not exists, otherwhise update the relationship
-        query = 'MATCH (kw:Keyword), (tp:Topic) '
-        query += 'WHERE kw.`_id`="{}" AND tp.topic_string="{}" AND tp.language="{}" '.format(keyword_id, topic_string, language)
-        query += 'MERGE (kw)-[mw:mentioned_with]->(tp) '.format(count)
+        query = 'MATCH (kw:Keyword), (ca:category) '
+        query += 'WHERE kw.`_id`="{}" AND ca.category_string="{}" AND ca.language="{}" '.format(keyword_id, category_string, language)
+        query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '.format(count)
         query += 'SET mw.count={}'.format(count)
 
         self.__execute_query(query)
