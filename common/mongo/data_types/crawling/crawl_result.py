@@ -99,8 +99,10 @@ class CrawlResult():
         affect the initial object.
         """
         self._id = str(self._id) if type(self._id) is ObjectId else self._id
+        self.keyword_ref = str(self.keyword_ref) if type(self.keyword_ref) is ObjectId else self.keyword_ref
         result =  json.loads(json.dumps(self.__dict__))
         self._id = ObjectId(self._id)
+        self.keyword_ref = ObjectId(self.keyword_ref)
         return result
         
 
