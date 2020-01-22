@@ -26,7 +26,7 @@ class TwitterResult(CrawlResult):
         :param int likes: The amount of likes the tweet has received
         :param int retweets: The amount of retweets the tweet has received
         """
-        super().__init__(_id, keyword_ref, keyword_string, language, text, CrawlTypes.TWITTER.value, timestamp, processor)
+        super().__init__(_id, keyword_ref, keyword_string, language, text, timestamp, CrawlTypes.TWITTER.value, processor)
         self.tweet_id = tweet_id
         self.likes = likes
         self.retweets = retweets
@@ -44,7 +44,7 @@ class TwitterResult(CrawlResult):
         return TwitterResult(
             dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
             dict_input['tweet_id'],
-            dict_input['keyword_ref'],
+            dict_input['keyword_ref'] if type(dict_input['keyword_ref']) is ObjectId else ObjectId(dict_input['keyword_ref']),
             dict_input['keyword_string'],
             dict_input['language'],
             dict_input['text'],
