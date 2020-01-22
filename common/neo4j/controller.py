@@ -55,7 +55,7 @@ class Neo4jController():
         query = 'MATCH (kw:Keyword), (en:Entity) '
         query += 'WHERE kw.`_id`="{}" AND en.entity_string="{}" AND en.language="{}" '.format(keyword_id, entity_string, language)
         query += 'MERGE (kw)-[mw:mentioned_with]->(en) '.format(count)
-        query += 'SET mw.count={}'.format(count)
+        query += 'SET mw.count=mw.count + {}'.format(count)
 
         self.__execute_query(query)
 
@@ -77,6 +77,6 @@ class Neo4jController():
         query = 'MATCH (kw:Keyword), (ca:category) '
         query += 'WHERE kw.`_id`="{}" AND ca.category_string="{}" AND ca.language="{}" '.format(keyword_id, category_string, language)
         query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '.format(count)
-        query += 'SET mw.count={}'.format(count)
+        query += 'SET mw.count=mw.count + {}'.format(count)
 
         self.__execute_query(query)
