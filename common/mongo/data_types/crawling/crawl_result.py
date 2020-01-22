@@ -3,6 +3,7 @@ This module provides the parent class of all crawl results
 """
 import json
 
+from datetime import datetime
 from bson import ObjectId
 
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
@@ -100,6 +101,7 @@ class CrawlResult():
         """
         self._id = str(self._id) if type(self._id) is ObjectId else self._id
         self.keyword_ref = str(self.keyword_ref) if type(self.keyword_ref) is ObjectId else self.keyword_ref
+        self.timestamp = self.timestamp.isoformat() if type(self.timestamp) is datetime else self.timestamp
         result =  json.loads(json.dumps(self.__dict__))
         self._id = ObjectId(self._id)
         self.keyword_ref = ObjectId(self.keyword_ref)
