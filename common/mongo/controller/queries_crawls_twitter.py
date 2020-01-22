@@ -84,7 +84,8 @@ def get_crawl_twitter_by_id(self, tweet_id, cast=False):
                 'retweets': 1,
                 'timestamp': 1,
                 'keyword_string': '$keyword.keyword_string',
-                'language': '$keyword.language'
+                'language': '$keyword.language',
+                'keyword_ref': 1,
             }
         }
     ]
