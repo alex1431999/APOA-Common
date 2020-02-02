@@ -37,12 +37,13 @@ class Neo4jController():
 
         self.__execute_query(query)
 
-    def add_entity(self, entity_string, language, count, keyword_id):
+    def add_entity(self, entity_string, language, score, count, keyword_id):
         """
         Add an entity to a keyword
 
         :param str entity_string: The string representation of the entity
         :param string language: The langauge of the entity
+        :param int score: The sentiment score of the entity
         :param int count: The amount of times an entity was mentioned in relation to the keyword
         :param ObjectId keyword_id: The ID of the keyword which the entity is related to
         """
@@ -55,16 +56,20 @@ class Neo4jController():
         query = 'MATCH (kw:Keyword), (en:Entity) '
         query += 'WHERE kw.`_id`="{}" AND en.entity_string="{}" AND en.language="{}" '.format(keyword_id, entity_string, language)
         query += 'MERGE (kw)-[mw:mentioned_with]->(en) '.format(count)
-        query += 'SET mw.count=mw.count + {}'.format(count)
+        query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
+        query += 'SET mw.score = CASE WHEN NOT exists(mw.score) THEN 0 ELSE mw.score END '
+        query += 'SET mw.count = mw.count + {} '.format(count)
+        query += 'SET mw.score = mw.score + {} '.format(score)
 
         self.__execute_query(query)
 
-    def add_category(self, category_string, language, count, keyword_id):
+    def add_category(self, category_string, language, confidence, count, keyword_id):
         """
         Add a category to a keyword
 
         :param str category_string: The string representation of the category
         :param string language: The langauge of the category
+        :param int confidence: The confidence of if the keyword is related to the topic
         :param int count: The amount of times a category was mentioned in relation to the keyword
         :param ObjectId keyword_id: The ID of the keyword which the category is related to
         """
@@ -77,6 +82,9 @@ class Neo4jController():
         query = 'MATCH (kw:Keyword), (ca:category) '
         query += 'WHERE kw.`_id`="{}" AND ca.category_string="{}" AND ca.language="{}" '.format(keyword_id, category_string, language)
         query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '.format(count)
-        query += 'SET mw.count=mw.count + {}'.format(count)
+        query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
+        query += 'SET mw.confidence = CASE WHEN NOT exists(mw.confidence) THEN 0 ELSE mw.confidence END '
+        query += 'SET mw.count = mw.count + {} '.format(count)
+        query += 'SET mw.confidence = mw.confidence + {}'.format(confidence)
 
         self.__execute_query(query)
