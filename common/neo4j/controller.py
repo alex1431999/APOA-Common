@@ -80,7 +80,7 @@ class Neo4jController():
         self.__execute_query(query)
 
         # Add relationship if not exists, otherwhise update the relationship
-        query = 'MATCH (kw:Keyword), (ca:category) '
+        query = 'MATCH (kw:Keyword), (ca:Category) '
         query += 'WHERE kw.`_id`="{}" AND ca.category_string="{}" AND ca.language="{}" '.format(keyword_id, category_string, language)
         query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '
         query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
