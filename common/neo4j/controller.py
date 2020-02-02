@@ -1,6 +1,7 @@
 """
 This module deals with all Graph database interaction using neo4j
 """
+import sys
 
 from neo4j import GraphDatabase
 
@@ -25,7 +26,7 @@ class Neo4jController():
 
         :param string query: The query to be executed
         """
-        self.session.run(query)
+        return self.session.run(query)
 
     def add_keyword(self, keyword):
         """
@@ -74,17 +75,52 @@ class Neo4jController():
         :param ObjectId keyword_id: The ID of the keyword which the category is related to
         """
         # Add node if not exists
-        query = 'MERGE (ca:category {{ category_string:"{}", language:"{}" }})'.format(category_string, language)
+        query = 'MERGE (ca:Category {{ category_string:"{}", language:"{}" }})'.format(category_string, language)
 
         self.__execute_query(query)
 
         # Add relationship if not exists, otherwhise update the relationship
         query = 'MATCH (kw:Keyword), (ca:category) '
         query += 'WHERE kw.`_id`="{}" AND ca.category_string="{}" AND ca.language="{}" '.format(keyword_id, category_string, language)
-        query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '.format(count)
+        query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '
         query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
         query += 'SET mw.confidence = CASE WHEN NOT exists(mw.confidence) THEN 0 ELSE mw.confidence END '
         query += 'SET mw.count = mw.count + {} '.format(count)
         query += 'SET mw.confidence = mw.confidence + {}'.format(confidence)
 
         self.__execute_query(query)
+
+
+    def get_keyword_entities(self, keyword, entity_limit=sys.maxsize):
+        """
+        Get a keyword with it's entities and categories
+
+        :param Keyword keyword: The target keyword
+        :param int entity_limit: The top amount of entities returned
+        """
+        query = 'MATCH (kw:Keyword)-[mw:mentioned_with]->(en:Entity)'
+        query += 'WHERE kw.`_id`="{}" '.format(keyword._id)
+        query += 'RETURN kw, en, mw '
+        query += 'ORDER BY mw.score DESC '
+        query += 'LIMIT {}'.format(entity_limit)
+
+        entities = self.__execute_query(query).records()
+
+        return entities
+
+    def get_keyword_categories(self, keyword, category_limit=sys.maxsize):
+        """
+        Get a keyword's categories
+
+        :param Keyword keyword: The target keyword
+        :param int category_limit: The top amount of categories returned
+        """
+        query = 'MATCH (kw:Keyword)-[mw:mentioned_with]->(ca:Category) '
+        query += 'WHERE kw.`_id`="{}" '.format(keyword._id)
+        query += 'RETURN kw, ca, mw '
+        query += 'ORDER BY mw.confidence DESC '
+        query += 'LIMIT {}'.format(category_limit)
+
+        categories = self.__execute_query(query).records()
+
+        return categories
