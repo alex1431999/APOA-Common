@@ -6,6 +6,9 @@ import sys
 from neo4j import GraphDatabase
 
 class Neo4jController():
+    # The maximum integer Neo4J accepts
+    MAX_32_INT = 2147483647
+
     """
     The Neo4j Controller handles all communication to the Graph Database
     """
@@ -91,7 +94,7 @@ class Neo4jController():
         self.__execute_query(query)
 
 
-    def get_keyword_entities(self, keyword, entity_limit=sys.maxsize):
+    def get_keyword_entities(self, keyword, entity_limit=Neo4jController.MAX_32_INT):
         """
         Get a keyword with it's entities and categories
 
@@ -108,7 +111,7 @@ class Neo4jController():
 
         return entities
 
-    def get_keyword_categories(self, keyword, category_limit=sys.maxsize):
+    def get_keyword_categories(self, keyword, category_limit=Neo4jController.MAX_32_INT):
         """
         Get a keyword's categories
 
