@@ -1,4 +1,7 @@
 pymongo==3.9.0
 passlib==1.7.2
 dnspython==1.16.0
-neo4j==1.7.6
+neo4j==1.7.2 
+neobolt==1.7.9 
+neotime==1.7.4                                                                
+
