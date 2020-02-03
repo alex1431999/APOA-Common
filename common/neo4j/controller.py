@@ -94,7 +94,7 @@ class Neo4jController():
         self.__execute_query(query)
 
 
-    def get_keyword_entities(self, keyword, entity_limit=Neo4jController.MAX_32_INT):
+    def get_keyword_entities(self, keyword, entity_limit=MAX_32_INT):
         """
         Get a keyword with it's entities and categories
 
@@ -111,7 +111,7 @@ class Neo4jController():
 
         return entities
 
-    def get_keyword_categories(self, keyword, category_limit=Neo4jController.MAX_32_INT):
+    def get_keyword_categories(self, keyword, category_limit=MAX_32_INT):
         """
         Get a keyword's categories
 
