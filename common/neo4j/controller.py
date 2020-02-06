@@ -5,6 +5,8 @@ import sys
 
 from neo4j import GraphDatabase
 
+from common.utils.environment import check_environment
+
 class Neo4jController():
     # The maximum integer Neo4J accepts
     MAX_32_INT = 2147483647
@@ -20,6 +22,10 @@ class Neo4jController():
         :param str user: The username to access the database
         :param str password: The password to access the database
         """
+        uri = check_environment('NEO_URI', uri)
+        user = check_environment('NEO_USER', user)
+        password = check_environment('NEO_PASSWORD', password)
+
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         self.session = self.driver.session()
 

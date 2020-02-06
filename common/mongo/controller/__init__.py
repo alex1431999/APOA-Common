@@ -9,6 +9,8 @@ https://stackoverflow.com/questions/9155618/splitting-a-class-that-is-too-large
 
 from pymongo import MongoClient, ASCENDING
 
+from common.utils.environment import check_environment 
+
 class MongoController():
     """
     Class to handle the database interactions
@@ -61,6 +63,15 @@ class MongoController():
     )
 
     def __init__(self, connection_string='mongodb://localhost:27017', db_name='default_db'):
+        """
+        Setup the controller with a connection to the database and all configurations loaded
+
+        :param str connection_string: The URL used to connect to the database
+        :param str db_name: The databse which shall be using during runtime
+        """
+        connection_string = check_environment('MONGO_URL', connection_string)
+        db_name = check_environment('MONGO_DATABASE_NAME', db_name)
+
         self.client = MongoClient(connection_string)
         self.db = self.client[db_name]
 
