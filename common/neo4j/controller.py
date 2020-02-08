@@ -110,7 +110,7 @@ class Neo4jController():
         query = 'MATCH (kw:Keyword)-[mw:mentioned_with]->(en:Entity)'
         query += 'WHERE kw.`_id`="{}" '.format(keyword._id)
         query += 'RETURN kw, en, mw '
-        query += 'ORDER BY mw.score DESC '
+        query += 'ORDER BY mw.count DESC '
         query += 'LIMIT {}'.format(entity_limit)
 
         entities = self.__execute_query(query).records()
