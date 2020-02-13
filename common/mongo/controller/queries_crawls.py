@@ -187,9 +187,11 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
 
     plotting_data = list(self.crawls_collection.aggregate(pipeline))
 
-    # Accumulate scores
+    # Format the plotting data to represent the change in average over time
     for i in range(len(plotting_data)):
-        if i > 0:
-            plotting_data[i]['score'] += plotting_data[i-1]['score']
+        position = i + 1
+        scores = [point['score'] for point in plotting_data]
+        avg = sum(scores[:position]) / position
+        plotting_data[i]['score'] = avg
 
     return plotting_data
