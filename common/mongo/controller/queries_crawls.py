@@ -15,7 +15,9 @@ from datetime import datetime
 from bson import ObjectId
 
 from common.mongo.data_types.crawling.crawl_result import CrawlResult
+from common.mongo.decorators.validation import validate_id
 
+@validate_id('_id')
 def get_crawl_by_id(self, _id, cast=False):
     """
     Find and return a crawl object using its ID
@@ -23,9 +25,6 @@ def get_crawl_by_id(self, _id, cast=False):
     :param ObjectId _id: The ID of the crawl
     :param boolean cast: If true, cast the crawl dict to a CrawlResult
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
-
     pipeline = [
         {
             '$match': {
@@ -118,6 +117,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     
     return crawls
 
+@validate_id('_id')
 def set_score_crawl(self, _id, score, return_object=False, cast=False):
     """
     Looks through each crawl collection for the crawl and sets the score
@@ -131,9 +131,6 @@ def set_score_crawl(self, _id, score, return_object=False, cast=False):
     :param boolean return_object: If true return the updated object
     :param boolean cast: If true cast the returned object to CrawlObject
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
-
     query = { '_id': _id }
     update = { '$set': { 'score': score } }
 
@@ -144,6 +141,7 @@ def set_score_crawl(self, _id, score, return_object=False, cast=False):
 
     return update_result
 
+@validate_id('keyword_id')
 def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
     """
     Gather all the crawls belonging to the given keyword id
@@ -157,9 +155,6 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
     :param ObjectId keyword_id: The id of the target keyword
     :param datetime date_cutoff: Only return plotting data up to that point in time
     """
-    if keyword_id is not ObjectId:
-        keyword_id = ObjectId(keyword_id)
-
     # Default date cutoff if none is provided
     if not date_cutoff:
         date_cutoff = datetime(1970,1,1)
