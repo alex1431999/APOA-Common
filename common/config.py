@@ -22,7 +22,6 @@ SUPPORTED_LANGUAGES = [
     "zh",
     "en",
     "fr",
-    "de",
     "it",
     "ja",
     "ko",
