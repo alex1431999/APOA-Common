@@ -190,3 +190,25 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
         plotting_data[i]['score'] = avg
 
     return plotting_data
+
+@validate_id('keyword_id')
+def get_crawls_average_score(self, keyword_id):
+    pipeline = [
+        {
+            '$match': { 'keyword_ref': keyword_id },
+        },
+        {
+            '$group': {
+                '_id': '$keyword_ref',
+                'avg': { '$avg': '$score' }
+            }
+        }
+    ]
+
+    try:
+        result = self.crawls_collection.aggregate(pipeline).next()
+        avg = result['avg']
+    except:
+        avg = None
+
+    return avg

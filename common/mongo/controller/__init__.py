@@ -48,6 +48,7 @@ class MongoController():
         set_score_crawl,
         get_crawl_by_id,
         get_crawls_plotting_data,
+        get_crawls_average_score,
     )
 
     # Twitter
