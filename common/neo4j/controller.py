@@ -68,8 +68,8 @@ class Neo4jController():
         query += 'MERGE (kw)-[mw:mentioned_with]->(en) '.format(count)
         query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
         query += 'SET mw.score = CASE WHEN NOT exists(mw.score) THEN 0 ELSE mw.score END '
+        query += 'SET mw.score = ((mw.score * mw.count) + {}) / (mw.count + 1) '.format(score)
         query += 'SET mw.count = mw.count + {} '.format(count)
-        query += 'SET mw.score = mw.score + {} '.format(score)
 
         self.__execute_query(query)
 
@@ -94,8 +94,8 @@ class Neo4jController():
         query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '
         query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
         query += 'SET mw.confidence = CASE WHEN NOT exists(mw.confidence) THEN 0 ELSE mw.confidence END '
+        query += 'SET mw.confidence = ((mw.confidence * mw.count) + {}) / (mw.count + 1) '.format(confidence)
         query += 'SET mw.count = mw.count + {} '.format(count)
-        query += 'SET mw.confidence = mw.confidence + {}'.format(confidence)
 
         self.__execute_query(query)
 
