@@ -12,7 +12,7 @@ class CrawlResult():
     """
     Parent class which all crawl results inherit from
     """
-    def __init__(self, _id, keyword_ref, keyword_string, language, text, timestamp, crawl_type=CrawlTypes.NEUTRAL.value, processor=None):
+    def __init__(self, _id, keyword_ref, keyword_string, language, text, timestamp, crawl_type=CrawlTypes.NEUTRAL.value, score=None):
         """
         Initialise the crawl result object and try to calculate scores in case
         a processor was added as well
@@ -24,7 +24,7 @@ class CrawlResult():
         :param str text: The actual text that is supposed to be evaluated
         :param datetime timestamp: The timestamp of creation
         :param CrawlType crawl_type: The type of crawl
-        :param GoogleCloudLanguageProcessor processor: The NLP processor used to evaluate the text
+        :param int processor: The NLP processor score
         """
         # Attributes
         self._id = _id
@@ -34,41 +34,7 @@ class CrawlResult():
         self.text = text
         self.crawl_type = crawl_type
         self.timestamp = timestamp
-
-        # Processed data
-        self.score = None
-        self.entities = []
-        self.calculate_score(processor)
-
-
-    def calculate_score(self, processor=None, force=False):
-        """
-        Calculate the score if a processor was provided to calculate the score
-
-        This function expects that the processor has a function called "process"
-        with the parameters "text: string, keyword_string: string" to be able
-        to proecess the data
-
-        :param obj processor: The processor used to calculate the score
-        :param boolean force: Force the recalculation of a score
-        """
-        if processor:
-            if (force or self.score is None):
-                score, entities, categories = processor.process(self.text, self.keyword_string)
-                self.score = score
-                self.entities = entities
-                self.categories = categories
-        else:
-            self.score = None
-            self.entities = []
-            self.categories = []
-
-    def get_score(self):
-        """
-        Get the score, can be overriden by child classes
-        Default behavior just returns the current score
-        """
-        return self.score
+        self.score = score
 
     @staticmethod
     def from_dict(dict_input):

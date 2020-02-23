@@ -75,6 +75,7 @@ def get_crawl_twitter_by_id(self, tweet_id, cast=False):
                 'timestamp': 1,
                 'keyword': { '$arrayElemAt': ['$keyword', 0] },
                 'keyword_ref': 1,
+                'score': 1,
             }
         },
         { # Final projection
@@ -88,6 +89,7 @@ def get_crawl_twitter_by_id(self, tweet_id, cast=False):
                 'keyword_string': '$keyword.keyword_string',
                 'language': '$keyword.language',
                 'keyword_ref': 1,
+                'score': 1,
             }
         }
     ]
