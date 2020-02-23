@@ -57,6 +57,12 @@ class MongoController():
         get_crawl_twitter_by_id,
     )
 
+    # News
+    from common.mongo.controller.queries_crawls_news import (
+        add_crawl_news,
+        get_crawl_news,
+    )
+
     # Users
     from common.mongo.controller.queries_user import (
         add_user,
