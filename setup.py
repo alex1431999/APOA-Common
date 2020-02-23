@@ -19,7 +19,7 @@ if os.path.isfile(REQUIREMENTS_PATH):
 
 setuptools.setup(
     name='final-year-project-common',
-    version='0.1.6',
+    version='0.1.7',
     description='The library of all common functionality within the project',
     url='git@gitlab.com:alex1431999/final-year-project-common.git',
     author='Alexander Haller',
