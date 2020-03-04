@@ -13,6 +13,7 @@ def add_crawl_news(self, keyword_id, author, title, text, timestamp, return_obje
     """
     Add a new news article to the crawl collection
 
+    :param ObjectId keyword_id: The ID of the keyword used to find the article
     :param str author: The author who has written the article
     :param str title: The title of the articlerticle
     :param str text: The actual article content
