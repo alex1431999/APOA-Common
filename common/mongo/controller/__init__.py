@@ -63,6 +63,12 @@ class MongoController():
         get_crawl_news,
     )
 
+    # NYT
+    from common.mongo.controller.queries_crawls_nyt import (
+        add_crawl_nyt,
+        get_crawl_nyt,
+    )
+
     # Users
     from common.mongo.controller.queries_user import (
         add_user,
