@@ -3,6 +3,7 @@ All keyword database functionality is defined in this module
 """
 from bson import ObjectId
 
+from common.exceptions.parameters import UnsupportedLanguageError
 from common.mongo.data_types.keyword import Keyword
 from common import config
 
@@ -38,7 +39,7 @@ def add_keyword(self, keyword_string, language, username, return_object=False, c
     :rtype: InsertOneResult / UpdateOneResult
     """
     if (language not in config.SUPPORTED_LANGUAGES):
-        raise Exception('Unsupported language "{}"'.format(language))
+        raise UnsupportedLanguageError(language)
     
     # Try to find the keyword
     query = { 'keyword_string': keyword_string, 'language': language }
