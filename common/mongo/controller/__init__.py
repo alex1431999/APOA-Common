@@ -75,15 +75,20 @@ class MongoController():
         get_user,
     )
 
-    def __init__(self, connection_string='mongodb://localhost:27017', db_name='default_db'):
+    def __init__(self, connection_string=None, db_name=None):
         """
         Setup the controller with a connection to the database and all configurations loaded
 
         :param str connection_string: The URL used to connect to the database
         :param str db_name: The databse which shall be using during runtime
         """
-        connection_string = check_environment('MONGO_URL', connection_string)
-        db_name = check_environment('MONGO_DATABASE_NAME', db_name)
+        # If no direct parameter is provided, check for env vars
+        if not connection_string: connection_string = check_environment('MONGO_URL', connection_string)
+        if not db_name: db_name = check_environment('MONGO_DATABASE_NAME', db_name)
+
+        # If not even env vars were provided, use default values
+        if not connection_string: connection_string = 'mongodb://localhost:27017'
+        if not db_name: db_name = 'default_db'
 
         self.client = MongoClient(connection_string)
         self.db = self.client[db_name]
