@@ -182,13 +182,6 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
 
     plotting_data = list(self.crawls_collection.aggregate(pipeline))
 
-    # Format the plotting data to represent the change in average over time
-    scores = [point['score'] for point in plotting_data]
-    for i in range(len(plotting_data)):
-        position = i + 1
-        avg = sum(scores[:position]) / position
-        plotting_data[i]['score'] = avg
-
     return plotting_data
 
 @validate_id('keyword_id')
