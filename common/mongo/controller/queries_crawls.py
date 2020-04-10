@@ -120,11 +120,7 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
 @validate_id('_id')
 def set_score_crawl(self, _id, score, return_object=False, cast=False):
     """
-    Looks through each crawl collection for the crawl and sets the score
-
-    You could be more efficient by defining what type of crawl you are manipulating
-    and already pointing towards the right collection (skipping all other collections)
-    which can be implemented if performance ever becomes an issue here.
+    Sets the score of a crawl
 
     :param ObjectId _id: The id of the crawl
     :param int score: The score to be set
