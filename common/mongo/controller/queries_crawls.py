@@ -182,6 +182,11 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
 
 @validate_id('keyword_id')
 def get_crawls_average_score(self, keyword_id):
+    """
+    Get the average score of a keyword
+
+    :param ObjectId keyword_id: The ID of the keyword
+    """
     pipeline = [
         {
             '$match': { 'keyword_ref': keyword_id },
@@ -201,3 +206,15 @@ def get_crawls_average_score(self, keyword_id):
         avg = None
 
     return avg
+
+@validate_id('keyword_id')
+def get_crawls_texts(self, keyword_id):
+    """
+    Get all the texts of a keyword plus their score
+    """
+    query = { 'keyword_ref': keyword_id }
+    projection = { '_id': 0, 'text': 1, 'score': 1, 'timestamp': 1 }
+
+    result = self.crawls_collection.find(query, projection).sort([('timestamp', -1)])
+
+    return list(result)
