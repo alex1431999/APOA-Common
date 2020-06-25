@@ -21,6 +21,7 @@ ENTITI_TYPES = [
 SUPPORTED_LANGUAGES = [
     "zh",
     "en",
+    "de",
     "fr",
     "it",
     "ja",
