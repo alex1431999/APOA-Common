@@ -1,4 +1,4 @@
-# Final Year Project Common
+# APOAX Common
 ## Setup
 Make sure python 3.6 and virtualenv are installed.
 
