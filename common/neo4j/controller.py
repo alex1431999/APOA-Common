@@ -7,14 +7,16 @@ from neo4j import GraphDatabase
 
 from common.utils.environment import check_environment
 
-class Neo4jController():
+
+class Neo4jController:
     # The maximum integer Neo4J accepts
     MAX_32_INT = 2147483647
 
     """
     The Neo4j Controller handles all communication to the Graph Database
     """
-    def __init__(self, uri="bolt://localhost:7687", user="neo4j", password='root'):
+
+    def __init__(self, uri="bolt://localhost:7687", user="neo4j", password="root"):
         """
         Initialise the driver
 
@@ -22,9 +24,9 @@ class Neo4jController():
         :param str user: The username to access the database
         :param str password: The password to access the database
         """
-        uri = check_environment('NEO_URI', uri)
-        user = check_environment('NEO_USER', user)
-        password = check_environment('NEO_PASSWORD', password)
+        uri = check_environment("NEO_URI", uri)
+        user = check_environment("NEO_USER", user)
+        password = check_environment("NEO_PASSWORD", password)
 
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         self.session = self.driver.session()
@@ -43,7 +45,9 @@ class Neo4jController():
 
         :param Keyword keyword: The keyword that shall be used as node
         """
-        query = 'MERGE (kw:Keyword {{ keyword_string: "{}", language: "{}", _id: "{}" }})'.format(keyword.keyword_string, keyword.language, keyword._id)
+        query = 'MERGE (kw:Keyword {{ keyword_string: "{}", language: "{}", _id: "{}" }})'.format(
+            keyword.keyword_string, keyword.language, keyword._id
+        )
 
         self.__execute_query(query)
 
@@ -58,18 +62,28 @@ class Neo4jController():
         :param ObjectId keyword_id: The ID of the keyword which the entity is related to
         """
         # Add node if not exists
-        query = 'MERGE (en:Entity {{ entity_string:"{}", language:"{}" }})'.format(entity_string, language)
+        query = 'MERGE (en:Entity {{ entity_string:"{}", language:"{}" }})'.format(
+            entity_string, language
+        )
 
         self.__execute_query(query)
 
         # Add relationship if not exists, otherwhise update the relationship
-        query = 'MATCH (kw:Keyword), (en:Entity) '
-        query += 'WHERE kw.`_id`="{}" AND en.entity_string="{}" AND en.language="{}" '.format(keyword_id, entity_string, language)
-        query += 'MERGE (kw)-[mw:mentioned_with]->(en) '.format(count)
-        query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
-        query += 'SET mw.score = CASE WHEN NOT exists(mw.score) THEN 0 ELSE mw.score END '
-        query += 'SET mw.score = ((mw.score * mw.count) + {}) / (mw.count + 1) '.format(score)
-        query += 'SET mw.count = mw.count + {} '.format(count)
+        query = "MATCH (kw:Keyword), (en:Entity) "
+        query += 'WHERE kw.`_id`="{}" AND en.entity_string="{}" AND en.language="{}" '.format(
+            keyword_id, entity_string, language
+        )
+        query += "MERGE (kw)-[mw:mentioned_with]->(en) ".format(count)
+        query += (
+            "SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END "
+        )
+        query += (
+            "SET mw.score = CASE WHEN NOT exists(mw.score) THEN 0 ELSE mw.score END "
+        )
+        query += "SET mw.score = ((mw.score * mw.count) + {}) / (mw.count + 1) ".format(
+            score
+        )
+        query += "SET mw.count = mw.count + {} ".format(count)
 
         self.__execute_query(query)
 
@@ -84,21 +98,28 @@ class Neo4jController():
         :param ObjectId keyword_id: The ID of the keyword which the category is related to
         """
         # Add node if not exists
-        query = 'MERGE (ca:Category {{ category_string:"{}", language:"{}" }})'.format(category_string, language)
+        query = 'MERGE (ca:Category {{ category_string:"{}", language:"{}" }})'.format(
+            category_string, language
+        )
 
         self.__execute_query(query)
 
         # Add relationship if not exists, otherwhise update the relationship
-        query = 'MATCH (kw:Keyword), (ca:Category) '
-        query += 'WHERE kw.`_id`="{}" AND ca.category_string="{}" AND ca.language="{}" '.format(keyword_id, category_string, language)
-        query += 'MERGE (kw)-[mw:mentioned_with]->(ca) '
-        query += 'SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END '
-        query += 'SET mw.confidence = CASE WHEN NOT exists(mw.confidence) THEN 0 ELSE mw.confidence END '
-        query += 'SET mw.confidence = ((mw.confidence * mw.count) + {}) / (mw.count + 1) '.format(confidence)
-        query += 'SET mw.count = mw.count + {} '.format(count)
+        query = "MATCH (kw:Keyword), (ca:Category) "
+        query += 'WHERE kw.`_id`="{}" AND ca.category_string="{}" AND ca.language="{}" '.format(
+            keyword_id, category_string, language
+        )
+        query += "MERGE (kw)-[mw:mentioned_with]->(ca) "
+        query += (
+            "SET mw.count = CASE WHEN NOT exists(mw.count) THEN 0 ELSE mw.count END "
+        )
+        query += "SET mw.confidence = CASE WHEN NOT exists(mw.confidence) THEN 0 ELSE mw.confidence END "
+        query += "SET mw.confidence = ((mw.confidence * mw.count) + {}) / (mw.count + 1) ".format(
+            confidence
+        )
+        query += "SET mw.count = mw.count + {} ".format(count)
 
         self.__execute_query(query)
-
 
     def get_keyword_entities(self, keyword, entity_limit=MAX_32_INT):
         """
@@ -107,11 +128,11 @@ class Neo4jController():
         :param Keyword keyword: The target keyword
         :param int entity_limit: The top amount of entities returned
         """
-        query = 'MATCH (kw:Keyword)-[mw:mentioned_with]->(en:Entity)'
+        query = "MATCH (kw:Keyword)-[mw:mentioned_with]->(en:Entity)"
         query += 'WHERE kw.`_id`="{}" '.format(keyword._id)
-        query += 'RETURN kw, en, mw '
-        query += 'ORDER BY mw.count DESC '
-        query += 'LIMIT {}'.format(entity_limit)
+        query += "RETURN kw, en, mw "
+        query += "ORDER BY mw.count DESC "
+        query += "LIMIT {}".format(entity_limit)
 
         entities = self.__execute_query(query).records()
 
@@ -124,11 +145,11 @@ class Neo4jController():
         :param Keyword keyword: The target keyword
         :param int category_limit: The top amount of categories returned
         """
-        query = 'MATCH (kw:Keyword)-[mw:mentioned_with]->(ca:Category) '
+        query = "MATCH (kw:Keyword)-[mw:mentioned_with]->(ca:Category) "
         query += 'WHERE kw.`_id`="{}" '.format(keyword._id)
-        query += 'RETURN kw, ca, mw '
-        query += 'ORDER BY mw.confidence DESC '
-        query += 'LIMIT {}'.format(category_limit)
+        query += "RETURN kw, ca, mw "
+        query += "ORDER BY mw.confidence DESC "
+        query += "LIMIT {}".format(category_limit)
 
         categories = self.__execute_query(query).records()
 

@@ -9,7 +9,10 @@ from bson import ObjectId
 from common.mongo.data_types.crawling.crawl_results.news_result import NewsResult
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
-def add_crawl_news(self, keyword_id, author, title, text, timestamp, return_object=False, cast=False):
+
+def add_crawl_news(
+    self, keyword_id, author, title, text, timestamp, return_object=False, cast=False
+):
     """
     Add a new news article to the crawl collection
 
@@ -24,22 +27,25 @@ def add_crawl_news(self, keyword_id, author, title, text, timestamp, return_obje
     :rtype: UpdateResult
     """
     document = {
-        'keyword_ref': keyword_id if type(keyword_id) is ObjectId else ObjectId(keyword_id),
-        'author': author,
-        'title': title,
-        'text': text,
-        'timestamp': timestamp,
-        'crawl_type': CrawlTypes.NEWS.value,
+        "keyword_ref": keyword_id
+        if type(keyword_id) is ObjectId
+        else ObjectId(keyword_id),
+        "author": author,
+        "title": title,
+        "text": text,
+        "timestamp": timestamp,
+        "crawl_type": CrawlTypes.NEWS.value,
     }
 
-    query = { 'author': author, 'title': title }
+    query = {"author": author, "title": title}
 
     update_result = self.crawls_collection.replace_one(query, document, upsert=True)
 
     if return_object:
         return self.get_crawl_news(author, title, cast)
-    
+
     return update_result
+
 
 def get_crawl_news(self, author, title, cast=False):
     """
@@ -52,53 +58,49 @@ def get_crawl_news(self, author, title, cast=False):
     :rtype: TwitterResult or None
     """
     pipeline = [
+        {"$match": {"author": author, "title": title}},
+        {"$limit": 1},
         {
-            "$match": { 'author': author, 'title': title }
-        },
-        {
-            '$limit': 1
-        },
-        {
-            '$lookup': {
-                'from': self.keywords_collection.name,
-                'localField': 'keyword_ref',
-                'foreignField': '_id',
-                'as': 'keyword'
+            "$lookup": {
+                "from": self.keywords_collection.name,
+                "localField": "keyword_ref",
+                "foreignField": "_id",
+                "as": "keyword",
             }
         },
-        { # Convert keyword from array to object
-            '$project': {
-                '_id': 1,
-                'author': 1,
-                'title': 1,
-                'text': 1,
-                'timestamp': 1,
-                'keyword': { '$arrayElemAt': ['$keyword', 0] },
-                'keyword_ref': 1,
-                'score': 1,
+        {  # Convert keyword from array to object
+            "$project": {
+                "_id": 1,
+                "author": 1,
+                "title": 1,
+                "text": 1,
+                "timestamp": 1,
+                "keyword": {"$arrayElemAt": ["$keyword", 0]},
+                "keyword_ref": 1,
+                "score": 1,
             }
         },
-        { # Final projection
-            '$project': {
-                '_id': 1,
-                'author': 1,
-                'title': 1,
-                'text': 1,
-                'timestamp': 1,
-                'keyword_string': '$keyword.keyword_string',
-                'language': '$keyword.language',
-                'keyword_ref': 1,
-                'score': 1,
+        {  # Final projection
+            "$project": {
+                "_id": 1,
+                "author": 1,
+                "title": 1,
+                "text": 1,
+                "timestamp": 1,
+                "keyword_string": "$keyword.keyword_string",
+                "language": "$keyword.language",
+                "keyword_ref": 1,
+                "score": 1,
             }
-        }
+        },
     ]
 
     try:
         news_article = self.crawls_collection.aggregate(pipeline).next()
-        
+
         if cast:
             news_article = NewsResult.from_dict(news_article)
-        
+
         return news_article
-    except Exception as ex: # The article was probably not found
+    except Exception as ex:  # The article was probably not found
         return None

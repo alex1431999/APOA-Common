@@ -9,25 +9,26 @@ https://stackoverflow.com/questions/9155618/splitting-a-class-that-is-too-large
 
 from pymongo import MongoClient, ASCENDING
 
-from common.utils.environment import check_environment 
+from common.utils.environment import check_environment
 
-class MongoController():
+
+class MongoController:
     """
     Class to handle the database interactions
 
     :param str connection_string: The address of the database
     :param str db_name: The name of the databse
     """
-    
+
     """
     Imports
     """
 
     # General
     from common.mongo.controller.setup import (
-        set_db, 
-        configure_database, 
-        create_collection_if_not_exists, 
+        set_db,
+        configure_database,
+        create_collection_if_not_exists,
         set_collections,
     )
 
@@ -50,6 +51,10 @@ class MongoController():
         get_crawls_plotting_data,
         get_crawls_average_score,
         get_crawls_texts,
+        set_entities_crawl,
+        set_categories_crawl,
+        get_entities,
+        get_categories,
     )
 
     # Twitter
@@ -84,12 +89,16 @@ class MongoController():
         :param str db_name: The databse which shall be using during runtime
         """
         # If no direct parameter is provided, check for env vars
-        if not connection_string: connection_string = check_environment('MONGO_URL', connection_string)
-        if not db_name: db_name = check_environment('MONGO_DATABASE_NAME', db_name)
+        if not connection_string:
+            connection_string = check_environment("MONGO_URL", connection_string)
+        if not db_name:
+            db_name = check_environment("MONGO_DATABASE_NAME", db_name)
 
         # If not even env vars were provided, use default values
-        if not connection_string: connection_string = 'mongodb://localhost:27017'
-        if not db_name: db_name = 'default_db'
+        if not connection_string:
+            connection_string = "mongodb://localhost:27017"
+        if not db_name:
+            db_name = "default_db"
 
         self.client = MongoClient(connection_string)
         self.db = self.client[db_name]
@@ -98,4 +107,6 @@ class MongoController():
         self.set_collections()
 
     def __str__(self):
-        return 'Currently connected to "{}" using database "{}"'.format(self.client.HOST, self.db.name)
+        return 'Currently connected to "{}" using database "{}"'.format(
+            self.client.HOST, self.db.name
+        )

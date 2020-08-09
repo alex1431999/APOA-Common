@@ -4,6 +4,7 @@ JSON read function to import json files
 
 import json
 
+
 def read_json(path):
     """
     Read in a JSON file and return the content as dict

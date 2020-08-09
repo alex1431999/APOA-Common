@@ -6,6 +6,7 @@ import inspect
 
 from bson import ObjectId
 
+
 def validate_id(target_parameter):
     """
     This layer is needed to be able to parse an argument into a decorator
@@ -19,6 +20,7 @@ def validate_id(target_parameter):
 
         :param func func: The function which shall be validated
         """
+
         def validate(*args, **kwargs):
             """
             Actual validator function
@@ -30,7 +32,7 @@ def validate_id(target_parameter):
             args = list(args)
 
             # Get the original names of all the parameters
-            param_names = inspect.getargspec(func)[0]
+            param_names = inspect.getfullargspec(func)[0]
 
             # Find the parameter which should be validated
             position = None
@@ -41,10 +43,10 @@ def validate_id(target_parameter):
             # Cast to ObjectId
             if position is not None:
                 arg = args[position]
-                
+
                 if type(arg) is str:
                     arg = ObjectId(arg)
-                
+
                 args[position] = arg
 
             # Cast back to tuple
@@ -53,4 +55,5 @@ def validate_id(target_parameter):
             return func(*args, **kwargs)
 
         return validate
+
     return validate_id_inner

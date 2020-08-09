@@ -17,7 +17,8 @@ from bson import ObjectId
 from common.mongo.data_types.crawling.crawl_result import CrawlResult
 from common.mongo.decorators.validation import validate_id
 
-@validate_id('_id')
+
+@validate_id("_id")
 def get_crawl_by_id(self, _id, cast=False):
     """
     Find and return a crawl object using its ID
@@ -26,36 +27,27 @@ def get_crawl_by_id(self, _id, cast=False):
     :param boolean cast: If true, cast the crawl dict to a CrawlResult
     """
     pipeline = [
+        {"$match": {"_id": _id,}},
+        {"$limit": 1,},
         {
-            '$match': {
-                '_id': _id,
+            "$lookup": {
+                "from": self.keywords_collection.name,
+                "localField": "keyword_ref",
+                "foreignField": "_id",
+                "as": "keyword",
             }
         },
+        {"$unwind": "$keyword"},
         {
-            '$limit': 1,
-        },
-        {
-            '$lookup':
-                {
-                    'from': self.keywords_collection.name,
-                    'localField': 'keyword_ref',
-                    'foreignField': '_id',
-                    'as': 'keyword', 
-                }
-        },
-        {
-            '$unwind': '$keyword'
-        },
-        {
-            '$project': {
-                '_id': 1,
-                'keyword_ref': 1,
-                'keyword_string': '$keyword.keyword_string',
-                'language': '$keyword.language',
-                'text': 1,
-                'timestamp': 1,
+            "$project": {
+                "_id": 1,
+                "keyword_ref": 1,
+                "keyword_string": "$keyword.keyword_string",
+                "language": "$keyword.language",
+                "text": 1,
+                "timestamp": 1,
             }
-        }
+        },
     ]
 
     try:
@@ -65,8 +57,9 @@ def get_crawl_by_id(self, _id, cast=False):
 
     if cast and crawl:
         crawl = CrawlResult.from_dict(crawl)
-    
+
     return crawl
+
 
 def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     """
@@ -78,46 +71,38 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
     :rtype: List<CrawlResult> or List<dict>
     """
     pipeline = [
+        {"$match": {"score": {"$exists": False}}},
+        {"$limit": limit},
         {
-            '$match': { 
-                'score': { '$exists': False } 
+            "$lookup": {
+                "from": self.keywords_collection.name,
+                "localField": "keyword_ref",
+                "foreignField": "_id",
+                "as": "keyword",
             }
         },
+        {"$unwind": "$keyword"},
         {
-            '$limit': limit
-        },
-        {
-            '$lookup':
-                {
-                    'from': self.keywords_collection.name,
-                    'localField': 'keyword_ref',
-                    'foreignField': '_id',
-                    'as': 'keyword', 
-                }
-        },
-        {
-            '$unwind': '$keyword'
-        },
-        {
-            '$project': {
-                '_id': 1,
-                'keyword_ref': 1,
-                'keyword_string': '$keyword.keyword_string',
-                'language': '$keyword.language',
-                'text': 1,
-                'timestamp': 1,
+            "$project": {
+                "_id": 1,
+                "keyword_ref": 1,
+                "keyword_string": "$keyword.keyword_string",
+                "language": "$keyword.language",
+                "text": 1,
+                "timestamp": 1,
             }
-        }
+        },
     ]
 
     crawls = list(self.crawls_collection.aggregate(pipeline))
 
     if cast:
         crawls = [CrawlResult.from_dict(crawl) for crawl in crawls]
-    
+
     return crawls
 
-@validate_id('_id')
+
+@validate_id("_id")
 def set_score_crawl(self, _id, score, return_object=False, cast=False):
     """
     Sets the score of a crawl
@@ -127,8 +112,8 @@ def set_score_crawl(self, _id, score, return_object=False, cast=False):
     :param boolean return_object: If true return the updated object
     :param boolean cast: If true cast the returned object to CrawlObject
     """
-    query = { '_id': _id }
-    update = { '$set': { 'score': score } }
+    query = {"_id": _id}
+    update = {"$set": {"score": score}}
 
     update_result = self.crawls_collection.update_one(query, update)
 
@@ -137,7 +122,8 @@ def set_score_crawl(self, _id, score, return_object=False, cast=False):
 
     return update_result
 
-@validate_id('keyword_id')
+
+@validate_id("keyword_id")
 def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
     """
     Gather all the crawls belonging to the given keyword id
@@ -153,34 +139,26 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
     """
     # Default date cutoff if none is provided
     if not date_cutoff:
-        date_cutoff = datetime(1970,1,1)
-    
+        date_cutoff = datetime(1970, 1, 1)
+
     pipeline = [
         {
-            '$match': {
-                'keyword_ref': keyword_id,
-                'score': { '$exists': True },
-                'timestamp': { '$gte': date_cutoff.isoformat() },
+            "$match": {
+                "keyword_ref": keyword_id,
+                "score": {"$exists": True},
+                "timestamp": {"$gte": date_cutoff.isoformat()},
             },
         },
-        {
-            '$project': {
-                '_id': 0,
-                'timestamp': 1,
-                'score': 1,
-                'text': 1,
-            },
-        },
-        {
-            '$sort': { 'timestamp': 1 },
-        },
+        {"$project": {"_id": 0, "timestamp": 1, "score": 1, "text": 1,},},
+        {"$sort": {"timestamp": 1},},
     ]
 
     plotting_data = list(self.crawls_collection.aggregate(pipeline))
 
     return plotting_data
 
-@validate_id('keyword_id')
+
+@validate_id("keyword_id")
 def get_crawls_average_score(self, keyword_id):
     """
     Get the average score of a keyword
@@ -188,33 +166,125 @@ def get_crawls_average_score(self, keyword_id):
     :param ObjectId keyword_id: The ID of the keyword
     """
     pipeline = [
-        {
-            '$match': { 'keyword_ref': keyword_id },
-        },
-        {
-            '$group': {
-                '_id': '$keyword_ref',
-                'avg': { '$avg': '$score' }
-            }
-        }
+        {"$match": {"keyword_ref": keyword_id},},
+        {"$group": {"_id": "$keyword_ref", "avg": {"$avg": "$score"}}},
     ]
 
     try:
         result = self.crawls_collection.aggregate(pipeline).next()
-        avg = result['avg']
+        avg = result["avg"]
     except:
         avg = None
 
     return avg
 
-@validate_id('keyword_id')
-def get_crawls_texts(self, keyword_id):
+
+@validate_id("keyword_id")
+def get_crawls_texts(self, keyword_id: ObjectId):
     """
     Get all the texts of a keyword plus their score
     """
-    query = { 'keyword_ref': keyword_id }
-    projection = { '_id': 0, 'text': 1, 'score': 1, 'timestamp': 1 }
+    query = {"keyword_ref": keyword_id}
+    projection = {"_id": 0, "text": 1, "score": 1, "timestamp": 1}
 
-    result = self.crawls_collection.find(query, projection).sort([('timestamp', -1)])
+    result = self.crawls_collection.find(query, projection).sort([("timestamp", -1)])
 
     return list(result)
+
+
+@validate_id("_id")
+def set_entities_crawl(self, _id: ObjectId, entities: list):
+    """
+    Set the entities of a crawl result
+    """
+    query = {"_id": _id}
+    update = {"$set": {"entities": entities}}
+
+    update_results = self.crawls_collection.update_one(query, update)
+
+    return update_results
+
+
+@validate_id("_id")
+def set_categories_crawl(self, _id: ObjectId, categories: list):
+    """
+    Set the entities of a crawl result
+    """
+    query = {"_id": _id}
+    update = {"$set": {"categories": categories}}
+
+    update_results = self.crawls_collection.update_one(query, update)
+
+    return update_results
+
+
+def get_entities(self, keyword_ref: ObjectId) -> list:
+    """
+    Get all the entities related to a keyword
+
+    :return: {count: int, score: float, value: string}
+    """
+    pipeline = [
+        {"$match": {"keyword_ref": keyword_ref,}},
+        {"$group": {"_id": "$keyword_ref", "entities": {"$push": "$entities"},}},
+        {
+            "$project": {
+                "_id": 0,
+                "entities": {
+                    "$reduce": {
+                        "input": "$entities",
+                        "initialValue": [],
+                        "in": {"$concatArrays": ["$$value", "$$this"]},
+                    }
+                },
+            }
+        },
+        {"$unwind": "$entities"},
+        {
+            "$group": {
+                "_id": "$entities.value",
+                "count": {"$sum": "$entities.count"},
+                "score": {"$avg": "$entities.score"},
+            }
+        },
+        {"$project": {"_id": 0, "value": "$_id", "count": 1, "score": 1,}},
+    ]
+
+    entities = list(self.crawls_collection.aggregate(pipeline))
+    return entities
+
+
+def get_categories(self, keyword_ref: ObjectId) -> list:
+    """
+    Get all the categories related to a keyword
+
+    :return: {count: int, confidence: float, value: string}
+    """
+    pipeline = [
+        {"$match": {"keyword_ref": keyword_ref,}},
+        {"$group": {"_id": "$keyword_ref", "categories": {"$push": "$categories"},}},
+        {
+            "$project": {
+                "_id": 0,
+                "categories": {
+                    "$reduce": {
+                        "input": "$categories",
+                        "initialValue": [],
+                        "in": {"$concatArrays": ["$$value", "$$this"]},
+                    }
+                },
+            }
+        },
+        {"$unwind": "$categories"},
+        {
+            "$group": {
+                "_id": "$categories.value",
+                "count": {"$sum": "$categories.count"},
+                "confidence": {"$avg": "$categories.confidence"},
+            }
+        },
+        {"$project": {"_id": 0, "value": "$_id", "count": 1, "confidence": 1,}},
+    ]
+
+    categories = list(self.crawls_collection.aggregate(pipeline))
+    return categories

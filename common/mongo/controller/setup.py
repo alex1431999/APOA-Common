@@ -6,6 +6,7 @@ from pymongo import ASCENDING
 
 from common.mongo import schemas
 
+
 def set_db(self, db_name):
     """
     Set the current database
@@ -13,6 +14,7 @@ def set_db(self, db_name):
     :param str db_name: The name of the new databse
     """
     self.db = self.client[db_name]
+
 
 def configure_database(self):
     """
@@ -27,14 +29,17 @@ def configure_database(self):
 
     # Apply indexes
     # Keywords collection
-    self.keywords_collection.create_index([('keyword_string', ASCENDING), ('language', ASCENDING)], unique=True)
+    self.keywords_collection.create_index(
+        [("keyword_string", ASCENDING), ("language", ASCENDING)], unique=True
+    )
 
     # Crawls collection
-    self.crawls_collection.create_index([('tweet_id', ASCENDING)], unique=True)
-    self.crawls_collection.create_index([('crawl_type', ASCENDING)])
+    self.crawls_collection.create_index([("tweet_id", ASCENDING)], unique=True)
+    self.crawls_collection.create_index([("crawl_type", ASCENDING)])
 
     # Users collection
-    self.users_collection.create_index([('username', ASCENDING)], unique=True)
+    self.users_collection.create_index([("username", ASCENDING)], unique=True)
+
 
 def create_collection_if_not_exists(self, collection_name):
     """
@@ -49,12 +54,13 @@ def create_collection_if_not_exists(self, collection_name):
     else:
         return self.db[collection_name]
 
+
 def set_collections(
-        self, 
-        keywords_collection_name='keywords', 
-        crawls_collection_name='crawls',
-        users_collection_name='users' 
-    ):
+    self,
+    keywords_collection_name="keywords",
+    crawls_collection_name="crawls",
+    users_collection_name="users",
+):
     """
     Set custom collection names
 
@@ -62,6 +68,10 @@ def set_collections(
     :param str crawls_collection_name: The name of the crawl collection
     :param str users_collection_name: The name of the users collection
     """
-    self.keywords_collection = self.create_collection_if_not_exists(keywords_collection_name)
-    self.crawls_collection = self.create_collection_if_not_exists(crawls_collection_name)
+    self.keywords_collection = self.create_collection_if_not_exists(
+        keywords_collection_name
+    )
+    self.crawls_collection = self.create_collection_if_not_exists(
+        crawls_collection_name
+    )
     self.users_collection = self.create_collection_if_not_exists(users_collection_name)

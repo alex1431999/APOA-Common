@@ -15,17 +15,7 @@ ENTITI_TYPES = [
     "ADDRESS",
     "DATE",
     "NUMBER",
-    "PRICE"
+    "PRICE",
 ]
 
-SUPPORTED_LANGUAGES = [
-    "zh",
-    "en",
-    "de",
-    "fr",
-    "it",
-    "ja",
-    "ko",
-    "pt",
-    "es"
-]
+SUPPORTED_LANGUAGES = ["zh", "en", "de", "fr", "it", "ja", "ko", "pt", "es"]
