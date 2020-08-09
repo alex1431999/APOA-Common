@@ -46,6 +46,8 @@ def get_crawl_by_id(self, _id, cast=False):
                 "language": "$keyword.language",
                 "text": 1,
                 "timestamp": 1,
+                "entities": 1,
+                "categories": 1,
             }
         },
     ]
@@ -90,6 +92,8 @@ def get_unprocessed_crawls(self, limit=sys.maxsize, cast=False):
                 "language": "$keyword.language",
                 "text": 1,
                 "timestamp": 1,
+                "entities": 1,
+                "categories": 1,
             }
         },
     ]

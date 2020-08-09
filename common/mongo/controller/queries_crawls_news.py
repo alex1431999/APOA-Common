@@ -35,6 +35,8 @@ def add_crawl_news(
         "text": text,
         "timestamp": timestamp,
         "crawl_type": CrawlTypes.NEWS.value,
+        "entities": None,
+        "categories": None,
     }
 
     query = {"author": author, "title": title}
@@ -78,6 +80,8 @@ def get_crawl_news(self, author, title, cast=False):
                 "keyword": {"$arrayElemAt": ["$keyword", 0]},
                 "keyword_ref": 1,
                 "score": 1,
+                "entities": 1,
+                "categories": 1,
             }
         },
         {  # Final projection
@@ -91,6 +95,8 @@ def get_crawl_news(self, author, title, cast=False):
                 "language": "$keyword.language",
                 "keyword_ref": 1,
                 "score": 1,
+                "entities": 1,
+                "categories": 1,
             }
         },
     ]

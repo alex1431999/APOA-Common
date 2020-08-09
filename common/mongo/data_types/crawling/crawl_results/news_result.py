@@ -24,6 +24,8 @@ class NewsResult(CrawlResult):
         text,
         timestamp,
         score=None,
+        entities=None,
+        categories=None,
     ):
         """
         Set up all attributes
@@ -46,6 +48,8 @@ class NewsResult(CrawlResult):
             timestamp,
             CrawlTypes.NEWS.value,
             score,
+            entities,
+            categories,
         )
         self.author = author
 
@@ -77,4 +81,6 @@ class NewsResult(CrawlResult):
             dict_input["text"],
             dict_input["timestamp"],
             score=score,
+            entities=dict_input["entities"],
+            categories=dict_input["categories"],
         )

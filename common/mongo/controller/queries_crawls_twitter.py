@@ -43,8 +43,8 @@ def add_crawl_twitter(
         "retweets": retweets,
         "timestamp": timestamp,
         "crawl_type": CrawlTypes.TWITTER.value,
-        "entities": [],
-        "categories": [],
+        "entities": None,
+        "categories": None,
     }
 
     query = {"tweet_id": tweet_id}
@@ -88,6 +88,8 @@ def get_crawl_twitter_by_id(self, tweet_id, cast=False):
                 "keyword": {"$arrayElemAt": ["$keyword", 0]},
                 "keyword_ref": 1,
                 "score": 1,
+                "entities": 1,
+                "categories": 1,
             }
         },
         {  # Final projection
@@ -102,6 +104,8 @@ def get_crawl_twitter_by_id(self, tweet_id, cast=False):
                 "language": "$keyword.language",
                 "keyword_ref": 1,
                 "score": 1,
+                "entities": 1,
+                "categories": 1,
             }
         },
     ]

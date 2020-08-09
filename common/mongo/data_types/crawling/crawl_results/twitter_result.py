@@ -26,6 +26,8 @@ class TwitterResult(CrawlResult):
         likes=0,
         retweets=0,
         score=None,
+        entities=None,
+        categories=None,
     ):
         """
         Set up all attributes
@@ -49,6 +51,8 @@ class TwitterResult(CrawlResult):
             timestamp,
             CrawlTypes.TWITTER.value,
             score,
+            entities,
+            categories,
         )
         self.tweet_id = tweet_id
         self.likes = likes
@@ -83,4 +87,6 @@ class TwitterResult(CrawlResult):
             dict_input["likes"],
             dict_input["retweets"],
             score=score,
+            entities=dict_input["entities"],
+            categories=dict_input["categories"],
         )

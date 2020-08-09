@@ -26,6 +26,8 @@ class NytResult(CrawlResult):
         text,
         timestamp,
         score=None,
+        entities=None,
+        categories=None,
     ):
         """
         Set up all attributes
@@ -47,6 +49,8 @@ class NytResult(CrawlResult):
             timestamp,
             CrawlTypes.NYT.value,
             score,
+            entities,
+            categories,
         )
         self.article_id = article_id
 
@@ -77,4 +81,6 @@ class NytResult(CrawlResult):
             dict_input["text"],
             dict_input["timestamp"],
             score=score,
+            entities=dict_input["entities"],
+            categories=dict_input["categories"],
         )

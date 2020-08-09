@@ -25,8 +25,8 @@ class CrawlResult:
         timestamp: datetime,
         crawl_type=CrawlTypes.NEUTRAL.value,
         score=None,
-        entities=[],
-        categories=[],
+        entities=None,
+        categories=None,
     ):
         """
         Initialise the crawl result object and try to calculate scores in case
@@ -41,6 +41,8 @@ class CrawlResult:
         self.crawl_type = crawl_type
         self.timestamp = timestamp
         self.score = score
+        self.entities = entities
+        self.categories = categories
 
     @staticmethod
     def from_dict(dict_input: dict):
@@ -61,6 +63,8 @@ class CrawlResult:
             dict_input["language"],
             dict_input["text"],
             dict_input["timestamp"],
+            entities=dict_input["entities"],
+            categories=dict_input["categories"],
         )
 
     def to_json(self) -> dict:
