@@ -254,6 +254,7 @@ def get_entities(self, keyword_ref: ObjectId, limit=sys.maxsize) -> list:
         },
         {"$limit": limit},
         {"$project": {"_id": 0, "value": "$_id", "count": 1, "score": 1}},
+        {"$sort": { "count": -1}},
     ]
 
     entities = list(self.crawls_collection.aggregate(pipeline))
@@ -292,6 +293,7 @@ def get_categories(self, keyword_ref: ObjectId, limit=sys.maxsize) -> list:
         },
         {"$limit": limit},
         {"$project": {"_id": 0, "value": "$_id", "count": 1, "confidence": 1}},
+        {"$sort": {"count": -1}},
     ]
 
     categories = list(self.crawls_collection.aggregate(pipeline))
