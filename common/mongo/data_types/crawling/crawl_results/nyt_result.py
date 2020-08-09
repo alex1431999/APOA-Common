@@ -7,6 +7,7 @@ from bson import ObjectId
 from common.mongo.data_types.crawling.crawl_result import CrawlResult
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
+
 class NytResult(CrawlResult):
     """
     This class serves the purpose of holding New York Times crawl result data
@@ -14,7 +15,18 @@ class NytResult(CrawlResult):
     TODO:
         - Still missing timestamp identifier
     """
-    def __init__(self, _id, article_id, keyword_ref, keyword_string, language, text, timestamp, score=None):
+
+    def __init__(
+        self,
+        _id,
+        article_id,
+        keyword_ref,
+        keyword_string,
+        language,
+        text,
+        timestamp,
+        score=None,
+    ):
         """
         Set up all attributes
 
@@ -26,7 +38,16 @@ class NytResult(CrawlResult):
         :param str text: A snippet of the Article
         :param str timestamp: The date on which the article was published
         """
-        super().__init__(_id, keyword_ref, keyword_string, language, text, timestamp, CrawlTypes.NYT.value, score)
+        super().__init__(
+            _id,
+            keyword_ref,
+            keyword_string,
+            language,
+            text,
+            timestamp,
+            CrawlTypes.NYT.value,
+            score,
+        )
         self.article_id = article_id
 
     @staticmethod
@@ -38,18 +59,22 @@ class NytResult(CrawlResult):
         """
         if not dict_input:
             return None
-        
+
         score = None
-        if 'score' in dict_input:
-            score = dict_input['score']
+        if "score" in dict_input:
+            score = dict_input["score"]
 
         return NytResult(
-            dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
-            dict_input['article_id'],
-            dict_input['keyword_ref'] if type(dict_input['keyword_ref']) is ObjectId else ObjectId(dict_input['keyword_ref']),
-            dict_input['keyword_string'],
-            dict_input['language'],
-            dict_input['text'],
-            dict_input['timestamp'],
-            score=score
+            dict_input["_id"]
+            if type(dict_input["_id"]) is ObjectId
+            else ObjectId(dict_input["_id"]),
+            dict_input["article_id"],
+            dict_input["keyword_ref"]
+            if type(dict_input["keyword_ref"]) is ObjectId
+            else ObjectId(dict_input["keyword_ref"]),
+            dict_input["keyword_string"],
+            dict_input["language"],
+            dict_input["text"],
+            dict_input["timestamp"],
+            score=score,
         )

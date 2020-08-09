@@ -6,3 +6,6 @@ __pycache__/
 
 # Test file
 playground.py
+
+# IDE
+.idea/

@@ -4,10 +4,12 @@ MongoDb data type
 
 from passlib.hash import pbkdf2_sha512
 
-class User():
+
+class User:
     """
     This class carries a user result from the mongodb database
     """
+
     def __init__(self, _id, username, password, created_at):
         """
         Set attributes
@@ -33,10 +35,10 @@ class User():
             return None
 
         return User(
-            dict_input['_id'],
-            dict_input['username'],
-            dict_input['password'],
-            dict_input['created_at'],
+            dict_input["_id"],
+            dict_input["username"],
+            dict_input["password"],
+            dict_input["created_at"],
         )
 
     def verifiy(self, password_candidate):

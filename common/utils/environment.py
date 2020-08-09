@@ -4,6 +4,7 @@ This module deals with any functionality related to the os environment of the ru
 
 import os
 
+
 def check_environment(variable_name, default_value):
     """
     Check if an environment variable exists and return its value, if the variable doesn't

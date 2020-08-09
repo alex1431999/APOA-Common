@@ -7,6 +7,7 @@ from datetime import datetime
 
 from common.mongo.data_types.user import User
 
+
 def add_user(self, username, password, is_hashed=False):
     """
     Hashes input password and adds new user to the database
@@ -18,15 +19,12 @@ def add_user(self, username, password, is_hashed=False):
     if not is_hashed:
         password = pbkdf2_sha512.encrypt(password)
 
-    today = datetime.now() # Time of creation
+    today = datetime.now()  # Time of creation
 
-    document = {
-        'username': username,
-        'password': password,
-        'created_at': today
-    }
-    
+    document = {"username": username, "password": password, "created_at": today}
+
     return self.users_collection.insert_one(document)
+
 
 def get_user(self, username):
     """
@@ -34,7 +32,7 @@ def get_user(self, username):
 
     :param str username: The username of the user
     """
-    query = { 'username': username }
+    query = {"username": username}
 
     user_dict = self.users_collection.find_one(query)
 
@@ -42,4 +40,3 @@ def get_user(self, username):
         return User.from_dict(user_dict)
     else:
         return None
-    

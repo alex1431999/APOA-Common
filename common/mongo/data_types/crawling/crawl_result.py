@@ -5,26 +5,32 @@ import json
 
 from datetime import datetime
 from bson import ObjectId
+from typing import Union
 
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
-class CrawlResult():
+
+class CrawlResult:
     """
     Parent class which all crawl results inherit from
     """
-    def __init__(self, _id, keyword_ref, keyword_string, language, text, timestamp, crawl_type=CrawlTypes.NEUTRAL.value, score=None):
+
+    def __init__(
+        self,
+        _id: Union[str, ObjectId],
+        keyword_ref: ObjectId,
+        keyword_string: str,
+        language: str,
+        text: str,
+        timestamp: datetime,
+        crawl_type=CrawlTypes.NEUTRAL.value,
+        score=None,
+        entities=[],
+        categories=[],
+    ):
         """
         Initialise the crawl result object and try to calculate scores in case
         a processor was added as well
-
-        :param str id: The unique identifier of the crawl result
-        :param ObjectId keyword_ref: The ID of the keyword the crawl refers to
-        :param str keyword_string: The target keyword that was used to generate the crawl result
-        :param str language: The language the text is written in
-        :param str text: The actual text that is supposed to be evaluated
-        :param datetime timestamp: The timestamp of creation
-        :param CrawlType crawl_type: The type of crawl
-        :param int processor: The NLP processor score
         """
         # Attributes
         self._id = _id
@@ -37,25 +43,27 @@ class CrawlResult():
         self.score = score
 
     @staticmethod
-    def from_dict(dict_input):
+    def from_dict(dict_input: dict):
         """
         Cast dict to Crawl Result object
-        
-        :param dict dict_input: The to be casted dict
         """
         if not dict_input:
             return None
-        
+
         return CrawlResult(
-            dict_input['_id'] if type(dict_input['_id']) is ObjectId else ObjectId(dict_input['_id']),
-            dict_input['keyword_ref'] if type(dict_input['keyword_ref']) is ObjectId else ObjectId(dict_input['keyword_ref']),
-            dict_input['keyword_string'],
-            dict_input['language'],
-            dict_input['text'],
-            dict_input['timestamp']
+            dict_input["_id"]
+            if type(dict_input["_id"]) is ObjectId
+            else ObjectId(dict_input["_id"]),
+            dict_input["keyword_ref"]
+            if type(dict_input["keyword_ref"]) is ObjectId
+            else ObjectId(dict_input["keyword_ref"]),
+            dict_input["keyword_string"],
+            dict_input["language"],
+            dict_input["text"],
+            dict_input["timestamp"],
         )
 
-    def to_json(self):
+    def to_json(self) -> dict:
         """
         Cast the object to JSON
 
@@ -66,13 +74,22 @@ class CrawlResult():
         affect the initial object.
         """
         self._id = str(self._id) if type(self._id) is ObjectId else self._id
-        self.keyword_ref = str(self.keyword_ref) if type(self.keyword_ref) is ObjectId else self.keyword_ref
-        self.timestamp = self.timestamp.isoformat() if type(self.timestamp) is datetime else self.timestamp
-        result =  json.loads(json.dumps(self.__dict__))
+        self.keyword_ref = (
+            str(self.keyword_ref)
+            if type(self.keyword_ref) is ObjectId
+            else self.keyword_ref
+        )
+        self.timestamp = (
+            self.timestamp.isoformat()
+            if type(self.timestamp) is datetime
+            else self.timestamp
+        )
+        result = json.loads(json.dumps(self.__dict__))
         self._id = ObjectId(self._id)
         self.keyword_ref = ObjectId(self.keyword_ref)
         return result
-        
 
-    def __str__(self):
-        return '<{}> {} --> Type: {}, Score: {}'.format(self._id, self.keyword_string, self.crawl_type, self.score)
+    def __str__(self) -> str:
+        return "<{}> {} --> Type: {}, Score: {}".format(
+            self._id, self.keyword_string, self.crawl_type, self.score
+        )
