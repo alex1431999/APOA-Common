@@ -222,6 +222,7 @@ def set_categories_crawl(self, _id: ObjectId, categories: list):
     return update_results
 
 
+@validate_id("keyword_ref")
 def get_entities(self, keyword_ref: ObjectId) -> list:
     """
     Get all the entities related to a keyword
@@ -258,6 +259,7 @@ def get_entities(self, keyword_ref: ObjectId) -> list:
     return entities
 
 
+@validate_id("keyword_ref")
 def get_categories(self, keyword_ref: ObjectId) -> list:
     """
     Get all the categories related to a keyword
