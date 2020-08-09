@@ -25,8 +25,8 @@ class CrawlResult:
         timestamp: datetime,
         crawl_type=CrawlTypes.NEUTRAL.value,
         score=None,
-        entities=None,
-        categories=None,
+        entities=[],
+        categories=[],
     ):
         """
         Initialise the crawl result object and try to calculate scores in case

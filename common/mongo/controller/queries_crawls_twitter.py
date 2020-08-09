@@ -43,8 +43,8 @@ def add_crawl_twitter(
         "retweets": retweets,
         "timestamp": timestamp,
         "crawl_type": CrawlTypes.TWITTER.value,
-        "entities": None,
-        "categories": None,
+        "entities": [],
+        "categories": [],
     }
 
     query = {"tweet_id": tweet_id}

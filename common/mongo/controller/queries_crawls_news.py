@@ -35,8 +35,8 @@ def add_crawl_news(
         "text": text,
         "timestamp": timestamp,
         "crawl_type": CrawlTypes.NEWS.value,
-        "entities": None,
-        "categories": None,
+        "entities": [],
+        "categories": [],
     }
 
     query = {"author": author, "title": title}

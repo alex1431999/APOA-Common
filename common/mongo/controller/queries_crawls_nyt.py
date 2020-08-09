@@ -30,8 +30,8 @@ def add_crawl_nyt(
         "text": text,
         "timestamp": timestamp,
         "crawl_type": CrawlTypes.NYT.value,
-        "entities": None,
-        "categories": None,
+        "entities": [],
+        "categories": [],
     }
 
     query = {"article_id": article_id}

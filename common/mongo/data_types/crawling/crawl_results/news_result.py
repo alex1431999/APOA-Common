@@ -24,8 +24,8 @@ class NewsResult(CrawlResult):
         text,
         timestamp,
         score=None,
-        entities=None,
-        categories=None,
+        entities=[],
+        categories=[],
     ):
         """
         Set up all attributes
