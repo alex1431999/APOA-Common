@@ -223,15 +223,15 @@ def set_categories_crawl(self, _id: ObjectId, categories: list):
 
 
 @validate_id("keyword_ref")
-def get_entities(self, keyword_ref: ObjectId) -> list:
+def get_entities(self, keyword_ref: ObjectId, limit=sys.maxsize) -> list:
     """
     Get all the entities related to a keyword
 
     :return: {count: int, score: float, value: string}
     """
     pipeline = [
-        {"$match": {"keyword_ref": keyword_ref,}},
-        {"$group": {"_id": "$keyword_ref", "entities": {"$push": "$entities"},}},
+        {"$match": {"keyword_ref": keyword_ref}},
+        {"$group": {"_id": "$keyword_ref", "entities": {"$push": "$entities"}}},
         {
             "$project": {
                 "_id": 0,
@@ -252,7 +252,8 @@ def get_entities(self, keyword_ref: ObjectId) -> list:
                 "score": {"$avg": "$entities.score"},
             }
         },
-        {"$project": {"_id": 0, "value": "$_id", "count": 1, "score": 1,}},
+        {"$limit": limit},
+        {"$project": {"_id": 0, "value": "$_id", "count": 1, "score": 1}},
     ]
 
     entities = list(self.crawls_collection.aggregate(pipeline))
@@ -260,15 +261,15 @@ def get_entities(self, keyword_ref: ObjectId) -> list:
 
 
 @validate_id("keyword_ref")
-def get_categories(self, keyword_ref: ObjectId) -> list:
+def get_categories(self, keyword_ref: ObjectId, limit=sys.maxsize) -> list:
     """
     Get all the categories related to a keyword
 
     :return: {count: int, confidence: float, value: string}
     """
     pipeline = [
-        {"$match": {"keyword_ref": keyword_ref,}},
-        {"$group": {"_id": "$keyword_ref", "categories": {"$push": "$categories"},}},
+        {"$match": {"keyword_ref": keyword_ref}},
+        {"$group": {"_id": "$keyword_ref", "categories": {"$push": "$categories"}}},
         {
             "$project": {
                 "_id": 0,
@@ -289,7 +290,8 @@ def get_categories(self, keyword_ref: ObjectId) -> list:
                 "confidence": {"$avg": "$categories.confidence"},
             }
         },
-        {"$project": {"_id": 0, "value": "$_id", "count": 1, "confidence": 1,}},
+        {"$limit": limit},
+        {"$project": {"_id": 0, "value": "$_id", "count": 1, "confidence": 1}},
     ]
 
     categories = list(self.crawls_collection.aggregate(pipeline))
