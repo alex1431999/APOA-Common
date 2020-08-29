@@ -3,9 +3,9 @@ All keyword database functionality is defined in this module
 """
 from bson import ObjectId
 
+from common import config
 from common.exceptions.parameters import UnsupportedLanguageError
 from common.mongo.data_types.keyword import Keyword
-from common import config
 
 
 def _set_deleted_flag(self, _id):
