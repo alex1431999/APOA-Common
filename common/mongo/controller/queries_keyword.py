@@ -172,3 +172,8 @@ def get_keyword_batch_cursor(self):
     """
     cursor = self.keywords_collection.find_raw_batches(no_cursor_timeout=True)
     return cursor
+
+
+def get_keywords_public(self, cast=False) -> list:
+    keywords_public_ids = self.get_meta_keywords_public_ids()
+    return [self.get_keyword_by_id(_id, cast=cast) for _id in keywords_public_ids]

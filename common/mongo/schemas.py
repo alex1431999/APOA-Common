@@ -9,7 +9,20 @@ This way the database iteself will have to deal with validation.
 from collections import OrderedDict
 
 
-def schema_keywords(collection_name):
+def construct_schema(vexpr: dict, collection_name: str) -> dict:
+    """
+    construct a schema query
+    """
+    query = [
+        ("collMod", collection_name),
+        ("validator", vexpr),
+        ("validationLevel", "moderate"),
+    ]
+    query = OrderedDict(query)
+    return query
+
+
+def schema_keywords(collection_name: str) -> dict:
     """
     Schema and restrictions of the keywords collection
 
@@ -41,22 +54,12 @@ def schema_keywords(collection_name):
             },
         }
     }
-    query = [
-        ("collMod", collection_name),
-        ("validator", vexpr),
-        ("validationLevel", "moderate"),
-    ]
-    query = OrderedDict(query)
-    return query
+    return construct_schema(vexpr, collection_name)
 
 
-def schema_crawls(collection_name):
+def schema_crawls(collection_name: str) -> dict:
     """
     Schema and restrictions of the crawls collection
-
-    :param str collection_name: The name of the crawls collection
-    :return: The query to be inserted into pymongo to enable the schema
-    :rtype: OrderedDict
     """
     vexpr = {
         "$jsonSchema": {
@@ -97,22 +100,12 @@ def schema_crawls(collection_name):
             },
         }
     }
-    query = [
-        ("collMod", collection_name),
-        ("validator", vexpr),
-        ("validationLevel", "moderate"),
-    ]
-    query = OrderedDict(query)
-    return query
+    return construct_schema(vexpr, collection_name)
 
 
-def schema_users(collection_name):
+def schema_users(collection_name: str) -> dict:
     """
     Schema and restrictions of the user collection
-
-    :param str collection_name: The name of the crawls twitter collection
-    :return: The query to be inserted into pymongo to enable the schema
-    :rtype: OrderedDict
     """
     vexpr = {
         "$jsonSchema": {
@@ -134,10 +127,23 @@ def schema_users(collection_name):
             },
         }
     }
-    query = [
-        ("collMod", collection_name),
-        ("validator", vexpr),
-        ("validationLevel", "moderate"),
-    ]
-    query = OrderedDict(query)
-    return query
+    return construct_schema(vexpr, collection_name)
+
+
+def schema_meta(collection_name: str) -> dict:
+    """
+    Schema and restrictions of the meta collection
+    """
+    vexpr = {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["keywords_public_ids"],
+            "properties": {
+                "keywords_public_ids": {
+                    "bsonType": "array",
+                    "description": "must be an array and is required",
+                },
+            },
+        }
+    }
+    return construct_schema(vexpr, collection_name)

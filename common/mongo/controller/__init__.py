@@ -41,6 +41,7 @@ class MongoController:
         get_keyword_batch_cursor,
         get_keyword_by_id,
         delete_keyword,
+        get_keywords_public,
     )
 
     # Crawls
@@ -79,6 +80,12 @@ class MongoController:
     from common.mongo.controller.queries_user import (
         add_user,
         get_user,
+    )
+
+    # Meta
+    from common.mongo.controller.queries_meta import (
+        set_meta_keywords_public_ids,
+        get_meta_keywords_public_ids,
     )
 
     def __init__(self, connection_string=None, db_name=None):

@@ -26,6 +26,7 @@ def configure_database(self):
     self.db.command(schemas.schema_keywords(self.keywords_collection.name))
     self.db.command(schemas.schema_crawls(self.crawls_collection.name))
     self.db.command(schemas.schema_users(self.users_collection.name))
+    self.db.command(schemas.schema_meta(self.meta_collection.name))
 
     # Apply indexes
     # Keywords collection
@@ -56,17 +57,14 @@ def create_collection_if_not_exists(self, collection_name):
 
 
 def set_collections(
-    self,
-    keywords_collection_name="keywords",
-    crawls_collection_name="crawls",
-    users_collection_name="users",
-):
+        self,
+        keywords_collection_name="keywords",
+        crawls_collection_name="crawls",
+        users_collection_name="users",
+        meta_collection_name="meta",
+) -> None:
     """
     Set custom collection names
-
-    :param str keywords_collection_name: The name of the keyword collection
-    :param str crawls_collection_name: The name of the crawl collection
-    :param str users_collection_name: The name of the users collection
     """
     self.keywords_collection = self.create_collection_if_not_exists(
         keywords_collection_name
@@ -75,3 +73,4 @@ def set_collections(
         crawls_collection_name
     )
     self.users_collection = self.create_collection_if_not_exists(users_collection_name)
+    self.meta_collection = self.create_collection_if_not_exists(meta_collection_name)
