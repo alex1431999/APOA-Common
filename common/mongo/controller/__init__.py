@@ -7,7 +7,7 @@ The idea to structre this class in this way comes from this stack overflow post:
 https://stackoverflow.com/questions/9155618/splitting-a-class-that-is-too-large
 """
 
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient
 
 from common.utils.environment import check_environment
 
