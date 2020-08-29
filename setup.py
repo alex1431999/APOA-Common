@@ -8,7 +8,6 @@ import os
 # Setuptools is used to setup the library
 import setuptools
 
-
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 REQUIREMENTS_PATH = CURRENT_DIR + "/requirements.txt"
 
@@ -19,7 +18,7 @@ if os.path.isfile(REQUIREMENTS_PATH):
 
 setuptools.setup(
     name="final-year-project-common",
-    version="0.1.8",
+    version="0.1.9",
     description="The library of all common functionality within the project",
     url="git@gitlab.com:alex1431999/final-year-project-common.git",
     author="Alexander Haller",
