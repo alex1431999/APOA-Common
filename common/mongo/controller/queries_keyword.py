@@ -176,4 +176,12 @@ def get_keyword_batch_cursor(self):
 
 def get_keywords_public(self, cast=False) -> list:
     keywords_public_ids = self.get_meta_keywords_public_ids()
-    return [self.get_keyword_by_id(_id, cast=cast) for _id in keywords_public_ids]
+
+    # Only add keywords which are not None
+    keywords = []
+    for _id in keywords_public_ids:
+        keyword = self.get_keyword_by_id(_id, cast=cast)
+        if keyword:
+            keywords.append(keyword)
+
+    return keywords
