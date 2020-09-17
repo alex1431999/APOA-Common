@@ -4,7 +4,11 @@ services:
   - mongo:latest
 
 variables:
+  # Python
   PYTHON_END: "DEVELOPMENT"
+
+  # Mongo
+  MONGO_URL: 'mongodb://mongo:27017'
 
 before_script:
   - python3 -m pip install -r requirements.txt
@@ -17,4 +21,4 @@ unittest:
   script:
   - export PYTHONPATH="$PYTHONPATH:."
   - python -c "import sys;print(sys.path)"
-  - sh test.sh
+  - python -m unittest discover -s test -p "*_test.py"
