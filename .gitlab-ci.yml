@@ -1,0 +1,20 @@
+image: "python3.7"
+
+services:
+  - mongo:latest
+
+variables:
+  PYTHON_END: "DEVELOPMENT"
+
+before_script:
+  - python3 -m pip install -r requirements.txt
+
+stages:
+  - Test
+
+unittest:
+  stage: Test
+  script:
+  - export PYTHONPATH="$PYTHONPATH:."
+  - python -c "import sys;print(sys.path)"
+  - sh test.sh

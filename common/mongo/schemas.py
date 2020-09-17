@@ -147,3 +147,30 @@ def schema_meta(collection_name: str) -> dict:
         }
     }
     return construct_schema(vexpr, collection_name)
+
+
+def schema_index(collection_name: str) -> dict:
+    vexpr = {
+        "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["name", "users", "deleted"],
+            "properties": {
+                "name": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required",
+                },
+                "users": {
+                    "bsonType": "array",
+                    "description": "must be an array and is required",
+                },
+                "deleted": {
+                    "bsonType": "bool",
+                    "description": "must be a boolean and is required",
+                },
+            },
+        }
+    }
+    """
+    Schema and restrictions of the index collection
+    """
+    return construct_schema(vexpr, collection_name)

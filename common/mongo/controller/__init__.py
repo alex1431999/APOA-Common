@@ -88,6 +88,13 @@ class MongoController:
         get_meta_keywords_public_ids,
     )
 
+    # Indexes
+    from common.mongo.controller.queries_index import (
+        get_index_by_id,
+        get_index,
+        add_index,
+    )
+
     def __init__(self, connection_string=None, db_name=None):
         """
         Setup the controller with a connection to the database and all configurations loaded
