@@ -29,19 +29,18 @@ def get_index(self, name: str, cast=False):
     return index
 
 
-@validate_id("user")
-def add_index(self, name: str, user: ObjectId, return_object=False, cast=False):
+def add_index(self, name: str, user_name: str, return_object=False, cast=False):
     index_exists = self.get_index(name)
 
     if index_exists:
         query = {"_id": index_exists["_id"]}
-        update = {"$addToSet": {"users": user}, "$set": {"deleted": False}}
+        update = {"$addToSet": {"users": user_name}, "$set": {"deleted": False}}
 
         self.indexes_collection.update_one(query, update)
     else:
         index = {
             "name": name,
-            "users": [user],
+            "users": [user_name],
             "deleted": False,
         }
 

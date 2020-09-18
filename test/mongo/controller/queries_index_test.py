@@ -5,13 +5,13 @@ from test.mongo.controller.setup import QueryTests
 
 
 class QueriesIndexTests(QueryTests):
-    # User fixtures
-    sample_user = ObjectId()
+    # username fixtures
+    sample_username = ObjectId()
 
     # Index fixtures
     sample_index = Index(ObjectId(), "sample index", [], False)
     sample_index_inserted = Index(
-        ObjectId(), "sample index inserted", [sample_user], False
+        ObjectId(), "sample index inserted", [sample_username], False
     )
 
     def setUp(self) -> None:
@@ -21,31 +21,31 @@ class QueriesIndexTests(QueryTests):
         )
 
     def test_add_index_new_index(self):
-        user = ObjectId()
+        username = "some username"
         index = self.mongo_controller.add_index(
-            self.sample_index.name, user, return_object=True, cast=True
+            self.sample_index.name, username, return_object=True, cast=True
         )
 
         self.assertEqual(
             index.name, self.sample_index.name, "the correct index was inserted"
         )
-        self.assertIn(user, index.users, "the user was added")
+        self.assertIn(username, index.users, "the username was added")
 
-    def test_add_index_new_user(self):
-        user = ObjectId()
-        user_new = ObjectId()
-        self.mongo_controller.add_index(self.sample_index.name, user)
+    def test_add_index_new_username(self):
+        username = "some username"
+        username_new = "some username new"
+        self.mongo_controller.add_index(self.sample_index.name, username)
         index = self.mongo_controller.add_index(
-            self.sample_index.name, user_new, return_object=True, cast=True
+            self.sample_index.name, username_new, return_object=True, cast=True
         )
 
         self.assertEqual(
             len(index.users),
             len(self.sample_index.users) + 2,
-            "Only exactly 2 new users should have " "been added",
+            "Only exactly 2 new usernames should have " "been added",
         )
-        self.assertIn(user, index.users, "The old user wasn't deleted")
-        self.assertIn(user_new, index.users, "The new user is part of users now")
+        self.assertIn(username, index.users, "The old username wasn't deleted")
+        self.assertIn(username_new, index.users, "The new username is part of usernames now")
 
     def test_get_index(self):
         index = self.mongo_controller.get_index(
