@@ -25,14 +25,19 @@ class CrawlResult:
         timestamp: datetime,
         crawl_type=CrawlTypes.NEUTRAL.value,
         score=None,
-        entities=[],
-        categories=[],
+        entities=None,
+        categories=None,
     ):
         """
         Initialise the crawl result object and try to calculate scores in case
         a processor was added as well
         """
         # Attributes
+        if categories is None:
+            categories = []
+        if entities is None:
+            entities = []
+
         self._id = _id
         self.keyword_ref = keyword_ref
         self.keyword_string = keyword_string

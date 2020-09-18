@@ -10,16 +10,13 @@ class Keyword:
     This class carries a keyword result from the mongodb database
     """
 
-    def __init__(self, _id, keyword_string, language, users=[]):
+    def __init__(self, _id: ObjectId, keyword_string: str, language: str, users=None):
         """
         Initialise the object
-
-        :param ObjectId _id: The Id of the document in the database
-        :param str keyword_string: The target keyword
-        :param str language: The target language
-        :param list<str> users: All users associated to the keyword 
         """
-        # Initial Data
+        if users is None:
+            users = []
+
         self._id = _id
         self.keyword_string = keyword_string
         self.language = language

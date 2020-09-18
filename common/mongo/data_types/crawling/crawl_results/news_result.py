@@ -24,8 +24,8 @@ class NewsResult(CrawlResult):
         text,
         timestamp,
         score=None,
-        entities=[],
-        categories=[],
+        entities=None,
+        categories=None,
     ):
         """
         Set up all attributes
@@ -51,6 +51,11 @@ class NewsResult(CrawlResult):
             entities,
             categories,
         )
+        if categories is None:
+            categories = []
+        if entities is None:
+            entities = []
+
         self.author = author
 
     @staticmethod

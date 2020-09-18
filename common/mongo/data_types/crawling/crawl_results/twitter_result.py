@@ -26,8 +26,8 @@ class TwitterResult(CrawlResult):
         likes=0,
         retweets=0,
         score=None,
-        entities=[],
-        categories=[],
+        entities=None,
+        categories=None,
     ):
         """
         Set up all attributes
@@ -54,6 +54,11 @@ class TwitterResult(CrawlResult):
             entities,
             categories,
         )
+        if categories is None:
+            categories = []
+        if entities is None:
+            entities = []
+
         self.tweet_id = tweet_id
         self.likes = likes
         self.retweets = retweets

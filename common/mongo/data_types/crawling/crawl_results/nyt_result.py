@@ -26,8 +26,8 @@ class NytResult(CrawlResult):
         text,
         timestamp,
         score=None,
-        entities=[],
-        categories=[],
+        entities=None,
+        categories=None,
     ):
         """
         Set up all attributes
@@ -52,6 +52,11 @@ class NytResult(CrawlResult):
             entities,
             categories,
         )
+        if categories is None:
+            categories = []
+        if entities is None:
+            entities = []
+
         self.article_id = article_id
 
     @staticmethod
