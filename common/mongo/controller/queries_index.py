@@ -29,7 +29,7 @@ def get_index(self, name: str, cast=False):
     return index
 
 
-@validate_id('user')
+@validate_id("user")
 def add_index(self, name: str, user: ObjectId, return_object=False, cast=False):
     index_exists = self.get_index(name)
 
@@ -50,4 +50,3 @@ def add_index(self, name: str, user: ObjectId, return_object=False, cast=False):
     if return_object:
         index = self.get_index(name)
         return Index.from_dict(index) if cast else index
-

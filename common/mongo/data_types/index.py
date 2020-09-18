@@ -16,10 +16,12 @@ class Index:
         if dict_input["_id"] is ObjectId:
             _id = dict_input["_id"]
         else:
-            _id = ObjectId(dict_input["_id"]),
+            _id = (ObjectId(dict_input["_id"]),)
 
         return Index(
-            dict_input["_id"] if type(dict_input["_id"]) is ObjectId else ObjectId(dict_input["_id"]),
+            dict_input["_id"]
+            if type(dict_input["_id"]) is ObjectId
+            else ObjectId(dict_input["_id"]),
             dict_input["name"],
             dict_input["users"],
             dict_input["deleted"],

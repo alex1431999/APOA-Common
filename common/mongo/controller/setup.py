@@ -58,12 +58,12 @@ def create_collection_if_not_exists(self, collection_name):
 
 
 def set_collections(
-        self,
-        keywords_collection_name="keywords",
-        crawls_collection_name="crawls",
-        users_collection_name="users",
-        meta_collection_name="meta",
-        indexes_collection_name="indexes"
+    self,
+    keywords_collection_name="keywords",
+    crawls_collection_name="crawls",
+    users_collection_name="users",
+    meta_collection_name="meta",
+    indexes_collection_name="indexes",
 ) -> None:
     """
     Set custom collection names
@@ -76,4 +76,6 @@ def set_collections(
     )
     self.users_collection = self.create_collection_if_not_exists(users_collection_name)
     self.meta_collection = self.create_collection_if_not_exists(meta_collection_name)
-    self.indexes_collection = self.create_collection_if_not_exists(indexes_collection_name)
+    self.indexes_collection = self.create_collection_if_not_exists(
+        indexes_collection_name
+    )

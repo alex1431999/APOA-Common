@@ -2,7 +2,8 @@ from unittest import TestCase
 
 from common.mongo.controller import MongoController
 
-DB_NAME = 'apoa-unit-testing'
+DB_NAME = "apoa-unit-testing"
+
 
 class QueryTests(TestCase):
     mongo_controller: MongoController
