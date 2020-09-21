@@ -9,9 +9,15 @@ class QueriesIndexTests(QueryTests):
     username_sample = ObjectId()
 
     # Index fixtures
-    index_sample = Index(ObjectId(), "sample index", [], IndexTypes.COMPANY.value, False)
+    index_sample = Index(
+        ObjectId(), "sample index", [], IndexTypes.COMPANY.value, False
+    )
     index_sample_inserted = Index(
-        ObjectId(), "sample index inserted", [username_sample], IndexTypes.COMPANY.value, False
+        ObjectId(),
+        "sample index inserted",
+        [username_sample],
+        IndexTypes.COMPANY.value,
+        False,
     )
 
     def setUp(self) -> None:
@@ -23,7 +29,11 @@ class QueriesIndexTests(QueryTests):
     def test_add_index_new_index(self):
         username = "some username"
         index = self.mongo_controller.add_index(
-            self.index_sample.name, IndexTypes.COMPANY.value, username, return_object=True, cast=True
+            self.index_sample.name,
+            IndexTypes.COMPANY.value,
+            username,
+            return_object=True,
+            cast=True,
         )
 
         self.assertEqual(
@@ -34,9 +44,15 @@ class QueriesIndexTests(QueryTests):
     def test_add_index_new_username(self):
         username = "some username"
         username_new = "some username new"
-        self.mongo_controller.add_index(self.index_sample.name, IndexTypes.COMPANY.value, username)
+        self.mongo_controller.add_index(
+            self.index_sample.name, IndexTypes.COMPANY.value, username
+        )
         index = self.mongo_controller.add_index(
-            self.index_sample.name, IndexTypes.COMPANY.value, username_new, return_object=True, cast=True
+            self.index_sample.name,
+            IndexTypes.COMPANY.value,
+            username_new,
+            return_object=True,
+            cast=True,
         )
 
         self.assertEqual(

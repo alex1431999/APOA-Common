@@ -6,6 +6,7 @@ class IndexTypes(Enum):
     """
     Enumerate all the different index types
     """
+
     COMPANY = "COMPANY"
     COMPETITION = "COMPETITION"
     BRANCH = "BRANCH"
@@ -13,7 +14,14 @@ class IndexTypes(Enum):
 
 
 class Index:
-    def __init__(self, _id: ObjectId, name: str, users: list, index_type: IndexTypes, deleted: bool):
+    def __init__(
+        self,
+        _id: ObjectId,
+        name: str,
+        users: list,
+        index_type: IndexTypes,
+        deleted: bool,
+    ):
         self._id = _id
         self.name = name
         self.users = users

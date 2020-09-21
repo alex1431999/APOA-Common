@@ -1,8 +1,5 @@
 """
 Indexes are accumulations of keywords, they are designed after stock market indexes
-
-TODO:
-    - Add
 """
 from bson import ObjectId
 
@@ -31,7 +28,14 @@ def get_index(self, name: str, cast=False):
     return index
 
 
-def add_index(self, name: str, index_type: IndexTypes, user_name: str, return_object=False, cast=False):
+def add_index(
+    self,
+    name: str,
+    index_type: IndexTypes,
+    user_name: str,
+    return_object=False,
+    cast=False,
+):
     index_exists = self.get_index(name)
 
     if index_exists:
