@@ -1,5 +1,8 @@
 """
 Indexes are accumulations of keywords, they are designed after stock market indexes
+
+TODO:
+    - Add
 """
 from bson import ObjectId
 

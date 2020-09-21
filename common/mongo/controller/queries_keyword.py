@@ -1,5 +1,12 @@
 """
 All keyword database functionality is defined in this module
+
+TODO:
+    - Add function to add index to a keyword
+    - Add function to remove index from keyword
+    - Add function to get all keywords of an index type
+    - Think about removing any access logic from this layer and only check permission on an api level
+        - This could allow you to permission a user if he is either directly or indirectly linked to the keyword
 """
 from bson import ObjectId
 from pymongo.results import UpdateResult
