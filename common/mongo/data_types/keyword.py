@@ -57,12 +57,12 @@ class Keyword:
     def deleted(self):
         return len(self.users) == 0 and len(self.indexes) == 0
 
-    def to_json(self):
+    def to_json(self, cast_to_string_id=True):
         """
         Return a json representation of yourself
         """
         return {
-            "_id": self._id if type(self._id) is not ObjectId else str(self._id),
+            "_id": str(self._id) if cast_to_string_id else ObjectId(self._id),
             "keyword_string": self.keyword_string,
             "language": self.language,
             "users": self.users,

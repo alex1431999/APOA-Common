@@ -13,7 +13,7 @@ class QueriesKeywordTests(QueryTests):
 
     def test_set_deleted_flag(self):
         self.mongo_controller.keywords_collection.update_one(
-            {"_id": str(self.keyword_sample._id)}, {"$set": {"deleted": False}}
+            {"_id": self.keyword_sample._id}, {"$set": {"deleted": False}}
         )
         keyword = self.mongo_controller.get_keyword_by_id(
             self.keyword_sample._id, cast=False
@@ -122,7 +122,7 @@ class QueriesKeywordTests(QueryTests):
         keyword = self.mongo_controller.get_keyword(
             self.keyword_sample.keyword_string, self.keyword_sample.language
         )
-        self.assertEqual(keyword, self.keyword_sample.to_json())
+        self.assertEqual(keyword, self.keyword_sample.to_json(cast_to_string_id=False))
 
     def test_get_keyword_user_allowed(self):
         username = "some user"
@@ -172,11 +172,11 @@ class QueriesKeywordTests(QueryTests):
             keyword._id = keyword_added._id
 
         keywords_returned = self.mongo_controller.get_keywords_user(username, cast=True)
-        keywords_returned_ids = [str(keyword._id) for keyword in keywords_returned]
+        keywords_returned_ids = [keyword._id for keyword in keywords_returned]
 
         for keyword in keywords:
             self.assertIn(
-                str(keyword._id),
+                keyword._id,
                 keywords_returned_ids,
                 "All the keywords should have been returned",
             )
@@ -250,11 +250,11 @@ class QueriesKeywordTests(QueryTests):
         self.mongo_controller.set_meta_keywords_public_ids(_ids)
 
         keywords = self.mongo_controller.get_keywords_public(cast=True)
-        keywords_ids = [str(keyword._id) for keyword in keywords]
+        keywords_ids = [keyword._id for keyword in keywords]
 
         for _id in _ids:
             self.assertIn(
-                str(_id), keywords_ids, "The public keywords should have been returned"
+                _id, keywords_ids, "The public keywords should have been returned"
             )
 
     def test_keywords_public_invalid_id(self):

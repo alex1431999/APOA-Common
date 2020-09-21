@@ -14,8 +14,10 @@ from pymongo.results import UpdateResult
 from common import config
 from common.exceptions.parameters import UnsupportedLanguageError
 from common.mongo.data_types.keyword import Keyword
+from common.mongo.decorators.validation import validate_id
 
 
+@validate_id("_id")
 def _set_deleted_flag(self, _id: ObjectId):
     """
     Set the deleted flag of a keyword.
@@ -24,7 +26,7 @@ def _set_deleted_flag(self, _id: ObjectId):
 
     keyword = self.get_keyword_by_id(_id, cast=True)
 
-    query = {"_id": str(_id)}
+    query = {"_id": _id}
     update = {"$set": {"deleted": keyword.deleted}}
 
     self.keywords_collection.update_one(query, update)
@@ -109,7 +111,7 @@ def get_keyword_by_id(self, _id: ObjectId, username=None, cast=False):
     """
     Get a keyword via its ID
     """
-    query = {"_id": str(_id)}
+    query = {"_id": _id}
 
     if username:
         query["users"] = username
@@ -122,11 +124,12 @@ def get_keyword_by_id(self, _id: ObjectId, username=None, cast=False):
     return keyword
 
 
+@validate_id("_id")
 def delete_keyword(self, _id: ObjectId, username: str) -> UpdateResult:
     """
     Delete a user from a keyword given the ID
     """
-    query = {"_id": str(_id)}
+    query = {"_id": _id}
     update = {"$pull": {"users": username}}
 
     deletion = self.keywords_collection.update_one(query, update)

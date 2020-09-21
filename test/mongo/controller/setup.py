@@ -26,7 +26,7 @@ class QueryTests(TestCase):
 
         # Insert some noise
         self.mongo_controller.keywords_collection.insert_one(
-            self.keyword_noise.to_json()
+            self.keyword_noise.to_json(cast_to_string_id=False)
         )
 
     def tearDown(self) -> None:
@@ -34,6 +34,6 @@ class QueryTests(TestCase):
 
     def load_sample_keyword(self):
         self.mongo_controller.keywords_collection.insert_one(
-            self.keyword_sample.to_json()
+            self.keyword_sample.to_json(cast_to_string_id=False)
         )
         return self.keyword_sample
