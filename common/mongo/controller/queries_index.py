@@ -4,7 +4,7 @@ Indexes are accumulations of keywords, they are designed after stock market inde
 from bson import ObjectId
 
 from common.mongo.decorators.validation import validate_id
-from common.mongo.data_types.index import Index
+from common.mongo.data_types.index import Index, IndexTypes
 
 
 @validate_id("_id")
@@ -28,7 +28,7 @@ def get_index(self, name: str, cast=False):
     return index
 
 
-def add_index(self, name: str, user_name: str, return_object=False, cast=False):
+def add_index(self, name: str, index_type: IndexTypes, user_name: str, return_object=False, cast=False):
     index_exists = self.get_index(name)
 
     if index_exists:
@@ -40,6 +40,7 @@ def add_index(self, name: str, user_name: str, return_object=False, cast=False):
         index = {
             "name": name,
             "users": [user_name],
+            "index_type": index_type,
             "deleted": False,
         }
 

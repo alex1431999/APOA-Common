@@ -157,7 +157,7 @@ def schema_index(collection_name: str) -> dict:
     vexpr = {
         "$jsonSchema": {
             "bsonType": "object",
-            "required": ["name", "users", "deleted"],
+            "required": ["name", "users", "index_type", "deleted"],
             "properties": {
                 "name": {
                     "bsonType": "string",
@@ -166,6 +166,10 @@ def schema_index(collection_name: str) -> dict:
                 "users": {
                     "bsonType": "array",
                     "description": "must be an array and is required",
+                },
+                "index_type": {
+                    "bsonType": "string",
+                    "description": "must be a string and is required",
                 },
                 "deleted": {
                     "bsonType": "bool",
