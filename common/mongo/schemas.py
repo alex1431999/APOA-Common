@@ -33,7 +33,7 @@ def schema_keywords(collection_name: str) -> dict:
     vexpr = {
         "$jsonSchema": {
             "bsonType": "object",
-            "required": ["keyword_string", "language", "users", "deleted"],
+            "required": ["keyword_string", "language", "users", "indexes", "deleted"],
             "properties": {
                 "keyword_string": {
                     "bsonType": "string",
@@ -44,6 +44,10 @@ def schema_keywords(collection_name: str) -> dict:
                     "description": "must be a string and is required",
                 },
                 "users": {
+                    "bsonType": "array",
+                    "description": "must be an array of strings and is required",
+                },
+                "indexes": {
                     "bsonType": "array",
                     "description": "must be an array of strings and is required",
                 },

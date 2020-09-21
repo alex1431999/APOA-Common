@@ -10,10 +10,20 @@ class Keyword:
     This class carries a keyword result from the mongodb database
     """
 
-    def __init__(self, _id: ObjectId, keyword_string: str, language: str, users=None):
+    def __init__(
+        self,
+        _id: ObjectId,
+        keyword_string: str,
+        language: str,
+        users=None,
+        indexes=None,
+    ):
         """
         Initialise the object
         """
+        # Initial Data
+        if indexes is None:
+            indexes = []
         if users is None:
             users = []
 
@@ -21,6 +31,7 @@ class Keyword:
         self.keyword_string = keyword_string
         self.language = language
         self.users = users
+        self.indexes = indexes
 
     @staticmethod
     def from_dict(dict_input):
@@ -39,11 +50,12 @@ class Keyword:
             dict_input["keyword_string"],
             dict_input["language"],
             dict_input["users"],
+            dict_input["indexes"],
         )
 
     @property
     def deleted(self):
-        return len(self.users) == 0
+        return len(self.users) == 0 and len(self.indexes) == 0
 
     def to_json(self):
         """
@@ -54,6 +66,7 @@ class Keyword:
             "keyword_string": self.keyword_string,
             "language": self.language,
             "users": self.users,
+            "indexes": self.indexes,
         }
 
     def __str__(self):

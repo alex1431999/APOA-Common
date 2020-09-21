@@ -2,43 +2,37 @@
 All keyword database functionality is defined in this module
 """
 from bson import ObjectId
+from pymongo.results import UpdateResult
 
 from common import config
 from common.exceptions.parameters import UnsupportedLanguageError
 from common.mongo.data_types.keyword import Keyword
 
 
-def _set_deleted_flag(self, _id):
+def _set_deleted_flag(self, _id: ObjectId):
     """
     Set the deleted flag of a keyword.
     This will usually be called after a keyword was altered
-
-    :param ObjectId _id: The ID of the target keyword
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
 
     keyword = self.get_keyword_by_id(_id, cast=True)
 
-    query = {"_id": _id}
+    query = {"_id": str(_id)}
     update = {"$set": {"deleted": keyword.deleted}}
 
     self.keywords_collection.update_one(query, update)
 
 
 def add_keyword(
-    self, keyword_string, language, username, return_object=False, cast=False
+    self,
+    keyword_string: str,
+    language: str,
+    username: str,
+    return_object=False,
+    cast=False,
 ):
     """
     Add a new keyword document to the database
-
-    :param str keyword_string: The target keyword
-    :param str language: The language the keyword is written in
-    :param str username: The name of the user that is added to the keyword
-    :param boolean return_object: If true return the updated object
-    :param boolean cast: If true cast the returned object to Keyword
-    :return: The inserted document result
-    :rtype: InsertOneResult / UpdateOneResult
     """
     if language not in config.SUPPORTED_LANGUAGES:
         raise UnsupportedLanguageError(language)
@@ -61,6 +55,7 @@ def add_keyword(
             "keyword_string": keyword_string,
             "language": language,
             "users": [username],
+            "indexes": [],
             "deleted": False,
         }
 
@@ -72,16 +67,9 @@ def add_keyword(
     return result
 
 
-def get_keyword(self, keyword_string, language, username=None, cast=False):
+def get_keyword(self, keyword_string: str, language: str, username=None, cast=False):
     """
     Get a keyword object from the database
-
-    :param str keyword_string: The target keyword
-    :param str language: The language the keyword is written in
-    :param str username: There might be a username that requested this keyword
-    :param boolean cast: If true, cast the keyword dict to Keyword
-    :return: The found keyword
-    :rtype: Keyword or None
     """
     query = {"keyword_string": keyword_string, "language": language}
 
@@ -96,19 +84,13 @@ def get_keyword(self, keyword_string, language, username=None, cast=False):
     return keyword
 
 
-def get_keywords_user(self, username, cast=False):
+def get_keywords_user(self, username: str, cast=False):
     """
     Get the keywords of a particular username
-
-    :param str username: The username of the username
-    :param boolean cast: If True, cast all results to be of type Keyword
-    :return: All keywords that belong to a username
-    :rtype: List<Keyword> / List<dict>
     """
     query = {"users": username}
-    projection = {"_id": 1, "keyword_string": 1, "language": 1}
 
-    keywords = list(self.keywords_collection.find(query, projection))
+    keywords = list(self.keywords_collection.find(query))
 
     if cast:  # You might want have all of the keywords casted
         keywords = [Keyword.from_dict(mongo_result) for mongo_result in keywords]
@@ -116,20 +98,11 @@ def get_keywords_user(self, username, cast=False):
     return keywords
 
 
-def get_keyword_by_id(self, _id, username=None, cast=False):
+def get_keyword_by_id(self, _id: ObjectId, username=None, cast=False):
     """
     Get a keyword via its ID
-
-    :param ObjectId _id: The ID of the keyword
-    :param str username: The user who requests the keyword
-    :param boolean cast: If True, cast keyword to Keyword
-    :return: The Keyword found
-    :rtype: Keyword or Dict
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
-
-    query = {"_id": _id}
+    query = {"_id": str(_id)}
 
     if username:
         query["users"] = username
@@ -142,18 +115,11 @@ def get_keyword_by_id(self, _id, username=None, cast=False):
     return keyword
 
 
-def delete_keyword(self, _id, username):
+def delete_keyword(self, _id: ObjectId, username: str) -> UpdateResult:
     """
     Delete a user from a keyword given the ID
-
-    :param ObjectId _id: The ID of the keyword
-    :param str username: The user who made the request
-    :return: The deletion
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
-
-    query = {"_id": _id}
+    query = {"_id": str(_id)}
     update = {"$pull": {"users": username}}
 
     deletion = self.keywords_collection.update_one(query, update)

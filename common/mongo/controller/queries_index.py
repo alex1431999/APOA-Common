@@ -1,7 +1,6 @@
 """
 Indexes are accumulations of keywords, they are designed after stock market indexes
 """
-from common.mongo.data_types.index import Index
 from bson import ObjectId
 
 from common.mongo.decorators.validation import validate_id

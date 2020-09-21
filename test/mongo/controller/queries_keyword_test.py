@@ -1,0 +1,267 @@
+from bson import ObjectId
+
+from common.mongo.data_types.keyword import Keyword
+from common.config import SUPPORTED_LANGUAGES
+from common.exceptions.parameters import UnsupportedLanguageError
+from test.mongo.controller.setup import QueryTests
+
+
+class QueriesKeywordTests(QueryTests):
+    def setUp(self) -> None:
+        super().setUp()
+        self.load_sample_keyword()
+
+    def test_set_deleted_flag(self):
+        self.mongo_controller.keywords_collection.update_one(
+            {"_id": str(self.keyword_sample._id)}, {"$set": {"deleted": False}}
+        )
+        keyword = self.mongo_controller.get_keyword_by_id(
+            self.keyword_sample._id, cast=False
+        )
+        self.assertFalse(keyword["deleted"], "Should be false initially")
+        self.assertTrue(
+            Keyword.from_dict(keyword).deleted, "The correct value should be true"
+        )
+
+        self.mongo_controller._set_deleted_flag(self.keyword_sample._id)
+
+        keyword = self.mongo_controller.get_keyword_by_id(
+            self.keyword_sample._id, cast=False
+        )
+        self.assertTrue(keyword["deleted"], "Should be set to deleted now")
+
+    def test_add_keyword_unsupported_language(self):
+        language = "some unsupported language"
+        self.assertNotIn(
+            language, SUPPORTED_LANGUAGES, "Make sure the language is not supported"
+        )
+
+        self.assertRaises(
+            UnsupportedLanguageError,
+            self.mongo_controller.add_keyword,
+            self.keyword_sample.keyword_string,
+            language,
+            "some user",
+        )
+
+    def test_add_keyword_supported_language(self):
+        language = SUPPORTED_LANGUAGES[0]
+        self.assertIn(
+            language, SUPPORTED_LANGUAGES, "Make sure the language is supported"
+        )
+
+        self.mongo_controller.add_keyword(
+            self.keyword_sample.keyword_string, language, "some user"
+        )
+
+        self.assertTrue(
+            True, "Make sure that we didn't throw an expcetion up until this point"
+        )
+
+    def test_add_keyword_new_keyword(self):
+        keyword = self.keyword_new
+        username = "some user"
+
+        keyword_exists_check = self.mongo_controller.get_keyword(
+            keyword.keyword_string, keyword.language
+        )
+
+        self.assertIsNone(
+            keyword_exists_check, "Make sure the keyword isn't in the database yet"
+        )
+        self.assertNotIn(
+            username,
+            keyword.users,
+            "Make sure the user is not yet associated to the keyword",
+        )
+
+        keyword_inserted = self.mongo_controller.add_keyword(
+            keyword.keyword_string,
+            keyword.language,
+            username,
+            return_object=True,
+            cast=True,
+        )
+        self.assertEqual(
+            keyword_inserted.keyword_string,
+            keyword.keyword_string,
+            "Make sure the correct keyword was inserted",
+        )
+        self.assertIn(
+            username, keyword_inserted.users, "Make sure the user was added on creation"
+        )
+
+    def test_add_keyword_new_user(self):
+        keyword = self.keyword_sample
+        username = "some new user"
+
+        self.assertNotIn(
+            username,
+            keyword.users,
+            "Make sure the username is not yet added to the keyword",
+        )
+
+        keyword_updated = self.mongo_controller.add_keyword(
+            keyword.keyword_string,
+            keyword.language,
+            username,
+            return_object=True,
+            cast=True,
+        )
+
+        self.assertEqual(
+            keyword._id,
+            keyword_updated._id,
+            "The correct keyword should have been updated",
+        )
+        self.assertIn(
+            username, keyword_updated.users, "The new user should have been added"
+        )
+
+    def test_get_keyword(self):
+        keyword = self.mongo_controller.get_keyword(
+            self.keyword_sample.keyword_string, self.keyword_sample.language
+        )
+        self.assertEqual(keyword, self.keyword_sample.to_json())
+
+    def test_get_keyword_user_allowed(self):
+        username = "some user"
+        self.mongo_controller.add_keyword(
+            self.keyword_sample.keyword_string,
+            self.keyword_sample.language,
+            username=username,
+        )
+        keyword = self.mongo_controller.get_keyword(
+            self.keyword_sample.keyword_string,
+            self.keyword_sample.language,
+            username=username,
+            cast=True,
+        )
+        self.assertIsNotNone(keyword)
+        self.assertIn(username, keyword.users)
+
+    def test_get_keyword_user_not_allowed(self):
+        username = "not an actual user"
+        keyword = self.mongo_controller.get_keyword(
+            self.keyword_sample.keyword_string,
+            self.keyword_sample.language,
+            username=username,
+            cast=True,
+        )
+        self.assertIsNone(keyword)
+
+    def test_get_keywords_user_no_keywords(self):
+        username = "a user with no keywords"
+
+        keywords = self.mongo_controller.get_keywords_user(username, cast=True)
+
+        self.assertTrue(len(keywords) == 0, "No keywords should have been returned")
+
+    def test_get_keywords_user_keywords(self):
+        username = "some username"
+        keywords = [self.keyword_sample, self.keyword_new]
+
+        for keyword in keywords:
+            keyword_added = self.mongo_controller.add_keyword(
+                keyword.keyword_string,
+                keyword.language,
+                username,
+                return_object=True,
+                cast=True,
+            )
+            keyword._id = keyword_added._id
+
+        keywords_returned = self.mongo_controller.get_keywords_user(username, cast=True)
+        keywords_returned_ids = [str(keyword._id) for keyword in keywords_returned]
+
+        for keyword in keywords:
+            self.assertIn(
+                str(keyword._id),
+                keywords_returned_ids,
+                "All the keywords should have been returned",
+            )
+
+    def test_get_keyword_by_id_no_keyword(self):
+        _id = ObjectId()
+
+        keyword = self.mongo_controller.get_keyword_by_id(_id)
+
+        self.assertIsNone(keyword, "No keyword should have been found")
+
+    def test_get_keyword_by_id_keyword(self):
+        keyword_existing = self.mongo_controller.get_keyword(
+            self.keyword_sample.keyword_string, self.keyword_sample.language, cast=True
+        )
+        _id = keyword_existing._id
+
+        keyword = self.mongo_controller.get_keyword_by_id(_id, cast=True)
+
+        self.assertIsNotNone(keyword, "Should have found a keyword")
+        self.assertEqual(_id, keyword._id, "The correct keyword should have been found")
+
+    def test_delete_keyword_no_users(self):
+        username = "some new user"
+        keyword = self.keyword_sample
+
+        self.assertNotIn(
+            username, keyword.users, "Make sure the user is not associated yet"
+        )
+
+        deletion = self.mongo_controller.delete_keyword(keyword._id, username)
+
+        self.assertEqual(
+            deletion.modified_count, 0, "No keywords should have been modified"
+        )
+
+    def test_delete_keyword_users(self):
+        username = "some new user"
+        keyword = self.keyword_sample
+
+        self.mongo_controller.add_keyword(
+            keyword.keyword_string, keyword.language, username
+        )
+
+        deletion = self.mongo_controller.delete_keyword(keyword._id, username)
+
+        self.assertEqual(
+            deletion.modified_count, 1, "One keyword should have been updated"
+        )
+
+        keyword_after_deletion = self.mongo_controller.get_keyword_by_id(
+            keyword._id, cast=True
+        )
+
+        self.assertNotIn(
+            username,
+            keyword_after_deletion.users,
+            "The username should have been deleted",
+        )
+
+    def test_keywords_public_no_keywords(self):
+        keywords = self.mongo_controller.get_keywords_public(cast=True)
+
+        self.assertEqual(
+            len(keywords), 0, "No keywords should have been found by default"
+        )
+
+    def test_keywords_public_keywords(self):
+        _ids = [self.keyword_sample._id]
+
+        self.mongo_controller.set_meta_keywords_public_ids(_ids)
+
+        keywords = self.mongo_controller.get_keywords_public(cast=True)
+        keywords_ids = [str(keyword._id) for keyword in keywords]
+
+        for _id in _ids:
+            self.assertIn(
+                str(_id), keywords_ids, "The public keywords should have been returned"
+            )
+
+    def test_keywords_public_invalid_id(self):
+        _id = ObjectId()
+
+        self.mongo_controller.set_meta_keywords_public_ids([_id])
+
+        keywords = self.mongo_controller.get_keywords_public()
+
+        self.assertEqual(len(keywords), 0, "No keywords should have been returned")

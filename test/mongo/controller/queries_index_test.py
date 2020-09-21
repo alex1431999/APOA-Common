@@ -45,7 +45,9 @@ class QueriesIndexTests(QueryTests):
             "Only exactly 2 new usernames should have " "been added",
         )
         self.assertIn(username, index.users, "The old username wasn't deleted")
-        self.assertIn(username_new, index.users, "The new username is part of usernames now")
+        self.assertIn(
+            username_new, index.users, "The new username is part of usernames now"
+        )
 
     def test_get_index(self):
         index = self.mongo_controller.get_index(
