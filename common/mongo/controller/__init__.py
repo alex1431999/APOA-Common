@@ -96,6 +96,7 @@ class MongoController:
         get_index_by_id,
         get_index,
         add_index,
+        get_indexes_by_type,
     )
 
     def __init__(self, connection_string=None, db_name=None):
