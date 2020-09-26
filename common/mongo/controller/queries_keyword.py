@@ -2,7 +2,6 @@
 All keyword database functionality is defined in this module
 
 TODO:
-    - Add function to get all keywords of an index type
     - Think about removing any access logic from this layer and only check permission on an api level
         - This could allow you to permission a user if he is either directly or indirectly linked to the keyword
 """
@@ -185,3 +184,15 @@ def delete_index_from_keyword(
 
     if return_object:
         return self.get_keyword_by_id(keyword_id, cast=cast)
+
+
+@validate_id("index_id")
+def get_keywords_by_index(self, index_id: ObjectId, cast=False):
+    query = {"indexes": index_id}
+
+    keywords = list(self.keywords_collection.find(query))
+
+    if cast:
+        keywords = [Keyword.from_dict(mongo_result) for mongo_result in keywords]
+
+    return keywords
