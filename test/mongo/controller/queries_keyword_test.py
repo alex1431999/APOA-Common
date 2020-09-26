@@ -367,11 +367,25 @@ class QueriesKeywordTests(QueryTests):
 
         keywords = []
         for i in range(keywords_amount):
-            keyword = self.mongo_controller.add_keyword(f"keyword {i}", SUPPORTED_LANGUAGES[0], "some user", return_object=True, cast=True)
-            keyword = self.mongo_controller.add_index_to_keyword(keyword._id, index_id, return_object=True)
+            keyword = self.mongo_controller.add_keyword(
+                f"keyword {i}",
+                SUPPORTED_LANGUAGES[0],
+                "some user",
+                return_object=True,
+                cast=True,
+            )
+            keyword = self.mongo_controller.add_index_to_keyword(
+                keyword._id, index_id, return_object=True
+            )
             keywords.append(keyword)
 
         keywords_found = self.mongo_controller.get_keywords_by_index(index_id)
 
-        self.assertEqual(len(keywords), len(keywords_found), "All the keywords should have been found")
-        self.assertEqual(keywords, keywords_found, "The correct keywords should have been found")
+        self.assertEqual(
+            len(keywords),
+            len(keywords_found),
+            "All the keywords should have been found",
+        )
+        self.assertEqual(
+            keywords, keywords_found, "The correct keywords should have been found"
+        )
