@@ -308,3 +308,47 @@ class QueriesKeywordTests(QueryTests):
         )
 
         self.assertIsNone(keyword, "No keyword should have been touched")
+
+    def test_delete_index_from_keyword_no_index(self):
+        keyword_id = self.keyword_sample._id
+        index_id = ObjectId()
+
+        keyword = self.mongo_controller.delete_index_from_keyword(
+            keyword_id, index_id, return_object=True, cast=True
+        )
+
+        self.assertEqual(
+            keyword.indexes,
+            self.keyword_sample.indexes,
+            "No indexes should have been deleted",
+        )
+
+    def test_delete_index_from_keyword_index(self):
+        keyword_id = self.keyword_sample._id
+        index_id = ObjectId()
+
+        keyword_initial = self.mongo_controller.add_index_to_keyword(
+            keyword_id, index_id, return_object=True, cast=True
+        )
+        self.assertIn(index_id, keyword_initial.indexes)
+
+        keyword = self.mongo_controller.delete_index_from_keyword(
+            keyword_id, index_id, return_object=True, cast=True
+        )
+
+        self.assertNotIn(index_id, keyword.indexes, "Index should have been removed")
+        self.assertEqual(
+            len(keyword.indexes),
+            len(keyword_initial.indexes) - 1,
+            "Only one index should have been removed",
+        )
+
+    def test_delete_index_from_keyword_invalid_keyword(self):
+        keyword_id = ObjectId()
+        index_id = ObjectId()
+
+        keyword = self.mongo_controller.delete_index_from_keyword(
+            keyword_id, index_id, return_object=True, cast=True
+        )
+
+        self.assertIsNone(keyword, "No keyword should have been touched")

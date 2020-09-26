@@ -2,8 +2,6 @@
 All keyword database functionality is defined in this module
 
 TODO:
-    - Add function to add index to a keyword
-    - Add function to remove index from keyword
     - Add function to get all keywords of an index type
     - Think about removing any access logic from this layer and only check permission on an api level
         - This could allow you to permission a user if he is either directly or indirectly linked to the keyword
@@ -169,6 +167,19 @@ def add_index_to_keyword(
 ):
     query = {"_id": keyword_id}
     update = {"$addToSet": {"indexes": index_id}}
+
+    self.keywords_collection.update_one(query, update)
+
+    if return_object:
+        return self.get_keyword_by_id(keyword_id, cast=cast)
+
+
+@validate_id(["keyword_id", "index_id"])
+def delete_index_from_keyword(
+    self, keyword_id: ObjectId, index_id: ObjectId, return_object=False, cast=False
+):
+    query = {"_id": keyword_id}
+    update = {"$pull": {"indexes": index_id}}
 
     self.keywords_collection.update_one(query, update)
 
