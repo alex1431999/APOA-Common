@@ -42,6 +42,7 @@ class MongoController:
         get_keyword_by_id,
         delete_keyword,
         get_keywords_public,
+        add_index_to_keyword,
     )
 
     # Crawls

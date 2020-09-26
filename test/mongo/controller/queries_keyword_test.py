@@ -265,3 +265,30 @@ class QueriesKeywordTests(QueryTests):
         keywords = self.mongo_controller.get_keywords_public()
 
         self.assertEqual(len(keywords), 0, "No keywords should have been returned")
+
+    def test_add_index_to_keyword_simple(self):
+        keyword_id = self.keyword_sample._id
+        index_id = ObjectId()
+
+        keyword = self.mongo_controller.add_index_to_keyword(keyword_id, index_id, return_object=True, cast=True)
+
+        self.assertIn(index_id, keyword.indexes, "The correct index should have been added")
+
+    def test_add_index_to_keyword_duplicate_index(self):
+        keyword_id = self.keyword_sample._id
+        index_id = ObjectId()
+
+        keyword = self.mongo_controller.add_index_to_keyword(keyword_id, index_id, return_object=True, cast=True)
+        length_initially = len(keyword.indexes)
+        keyword = self.mongo_controller.add_index_to_keyword(keyword_id, index_id, return_object=True, cast=True)
+
+        self.assertIn(index_id, keyword.indexes, "The correct index should have been added")
+        self.assertEqual(len(keyword.indexes), length_initially, "The second index should have not been added")
+
+    def test_add_index_to_keyword_invalid_keyword(self):
+        keyword_id = ObjectId()
+        index_id = ObjectId()
+
+        keyword = self.mongo_controller.add_index_to_keyword(keyword_id, index_id, return_object=True, cast=True)
+
+        self.assertIsNone(keyword, "No keyword should have been touched")
