@@ -7,11 +7,11 @@ import inspect
 from bson import ObjectId
 
 
-def validate_id(target_parameter):
+def validate_id(target_parameters: any):
     """
     This layer is needed to be able to parse an argument into a decorator
 
-    :param string target_parameter: The parameter which should be validated
+    target_parameters can be a string or a list, it will always be converted to a list
     """
 
     def validate_id_inner(func):
@@ -34,20 +34,15 @@ def validate_id(target_parameter):
             # Get the original names of all the parameters
             param_names = inspect.getfullargspec(func)[0]
 
-            # Find the parameter which should be validated
-            position = None
-            for i in range(len(param_names)):
-                if str(target_parameter) == str(param_names[i]):
-                    position = i
+            # Make sure the target parameters is a list
+            target_parameters_validated = [target_parameters] if type(target_parameters) is str else target_parameters
 
-            # Cast to ObjectId
-            if position is not None:
-                arg = args[position]
+            # parse
+            for target_parameter in target_parameters_validated:
+                arg_parsed, position = parse_parameter(target_parameter, param_names, args, ObjectId)
 
-                if type(arg) is str:
-                    arg = ObjectId(arg)
-
-                args[position] = arg
+                if arg_parsed:
+                    args[position] = arg_parsed
 
             # Cast back to tuple
             args = tuple(args)
@@ -57,3 +52,21 @@ def validate_id(target_parameter):
         return validate
 
     return validate_id_inner
+
+
+def parse_parameter(target_parameter: str, param_names: list, args: list, TargetType: any) -> any:
+    # Find the parameter which should be validated
+    position = None
+    for i in range(len(param_names)):
+        if str(target_parameter) == str(param_names[i]):
+            position = i
+
+    # Cast to ObjectId
+    arg = None
+    if position is not None:
+        arg = args[position]
+
+        if type(arg) is not TargetType:
+            arg = TargetType(arg)
+
+    return arg, position
