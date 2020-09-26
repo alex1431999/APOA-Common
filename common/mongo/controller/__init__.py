@@ -42,6 +42,9 @@ class MongoController:
         get_keyword_by_id,
         delete_keyword,
         get_keywords_public,
+        add_index_to_keyword,
+        delete_index_from_keyword,
+        get_keywords_by_index,
     )
 
     # Crawls
@@ -93,6 +96,7 @@ class MongoController:
         get_index_by_id,
         get_index,
         add_index,
+        get_indexes_by_type,
     )
 
     def __init__(self, connection_string=None, db_name=None):

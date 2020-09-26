@@ -15,3 +15,9 @@ class UnsupportedLanguageError(Exception):
     def __init__(self, language):
         message = f'Unsupported Language: "{language}"'
         super(UnsupportedLanguageError, self).__init__(message)
+
+
+class UnsupportedIndexTypeError(Exception):
+    def __init__(self, index_type):
+        message = f'Unsupported Index Type: "{index_type}"'
+        super(UnsupportedIndexTypeError, self).__init__(message)

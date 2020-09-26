@@ -1,61 +1,80 @@
 from bson import ObjectId
 
-from common.mongo.data_types.index import Index
+from common.exceptions.parameters import UnsupportedIndexTypeError
+from common.mongo.data_types.index import Index, IndexTypes
 from test.mongo.controller.setup import QueryTests
 
 
 class QueriesIndexTests(QueryTests):
-    # User fixtures
-    sample_user = ObjectId()
+    # username fixtures
+    username_sample = ObjectId()
 
     # Index fixtures
-    sample_index = Index(ObjectId(), "sample index", [], False)
-    sample_index_inserted = Index(
-        ObjectId(), "sample index inserted", [sample_user], False
+    index_sample = Index(
+        ObjectId(), "sample index", [], IndexTypes.COMPANY.value, False
+    )
+    index_sample_inserted = Index(
+        ObjectId(),
+        "sample index inserted",
+        [username_sample],
+        IndexTypes.COMPANY.value,
+        False,
     )
 
     def setUp(self) -> None:
         super().setUp()
         self.mongo_controller.indexes_collection.insert_one(
-            self.sample_index_inserted.to_json()
+            self.index_sample_inserted.to_json()
         )
 
     def test_add_index_new_index(self):
-        user = ObjectId()
+        username = "some username"
         index = self.mongo_controller.add_index(
-            self.sample_index.name, user, return_object=True, cast=True
+            self.index_sample.name,
+            IndexTypes.COMPANY.value,
+            username,
+            return_object=True,
+            cast=True,
         )
 
         self.assertEqual(
-            index.name, self.sample_index.name, "the correct index was inserted"
+            index.name, self.index_sample.name, "the correct index was inserted"
         )
-        self.assertIn(user, index.users, "the user was added")
+        self.assertIn(username, index.users, "the username was added")
 
-    def test_add_index_new_user(self):
-        user = ObjectId()
-        user_new = ObjectId()
-        self.mongo_controller.add_index(self.sample_index.name, user)
+    def test_add_index_new_username(self):
+        username = "some username"
+        username_new = "some username new"
+        self.mongo_controller.add_index(
+            self.index_sample.name, IndexTypes.COMPANY.value, username
+        )
         index = self.mongo_controller.add_index(
-            self.sample_index.name, user_new, return_object=True, cast=True
+            self.index_sample.name,
+            IndexTypes.COMPANY.value,
+            username_new,
+            return_object=True,
+            cast=True,
         )
 
         self.assertEqual(
             len(index.users),
-            len(self.sample_index.users) + 2,
-            "Only exactly 2 new users should have " "been added",
+            len(self.index_sample.users) + 2,
+            "Only exactly 2 new usernames should have " "been added",
         )
-        self.assertIn(user, index.users, "The old user wasn't deleted")
-        self.assertIn(user_new, index.users, "The new user is part of users now")
+        self.assertIn(username, index.users, "The old username wasn't deleted")
+        self.assertIn(
+            username_new, index.users, "The new username is part of usernames now"
+        )
 
     def test_get_index(self):
         index = self.mongo_controller.get_index(
-            self.sample_index_inserted.name, cast=True
+            self.index_sample_inserted.name, cast=True
         )
 
         self.assertIsNotNone(index, "Should have found something")
         self.assertEqual(
             index._id,
-            self.sample_index_inserted._id,
+            self.index_sample_inserted._id,
             "The correct index should have been returned",
         )
 
@@ -69,12 +88,12 @@ class QueriesIndexTests(QueryTests):
 
     def test_get_index_by_id(self):
         index = self.mongo_controller.get_index_by_id(
-            self.sample_index_inserted._id, cast=True
+            self.index_sample_inserted._id, cast=True
         )
 
         self.assertEqual(
             index._id,
-            self.sample_index_inserted._id,
+            self.index_sample_inserted._id,
             "The correct index should have been returned",
         )
 
@@ -84,3 +103,85 @@ class QueriesIndexTests(QueryTests):
 
         self.assertIsNone(index, "Should just be None")
         self.assertIsNone(index_casted, "Should just be None")
+
+    def test_get_indexes_by_type_invalid_type(self):
+        username = "some username"
+        index_type_invalid = "some invalid type"
+
+        self.assertRaises(
+            UnsupportedIndexTypeError,
+            self.mongo_controller.get_indexes_by_type,
+            index_type_invalid,
+            username,
+        )
+
+    def test_get_indexes_by_type_no_indexes(self):
+        username = "some username"
+        index_type = IndexTypes.COMPANY.value
+
+        indexes = self.mongo_controller.get_indexes_by_type(
+            index_type, username, cast=True
+        )
+
+        self.assertEqual(indexes, [])
+
+    def test_get_indexes_by_type_indexes(self):
+        username = "some username"
+        index_type = IndexTypes.COMPANY.value
+
+        index_added = self.mongo_controller.add_index(
+            "some name", index_type, username, return_object=True
+        )
+
+        indexes_found = self.mongo_controller.get_indexes_by_type(index_type, username)
+
+        self.assertEqual(len(indexes_found), 1, "Only one should have been found")
+        self.assertEqual(
+            indexes_found,
+            [index_added],
+            "The index found should be the same that was added",
+        )
+
+    def test_get_indexes_by_type_many_indexes(self):
+        username = "some username"
+        index_type = IndexTypes.COMPANY.value
+
+        index_added_one = self.mongo_controller.add_index(
+            "some name", index_type, username, return_object=True
+        )
+        index_added_two = self.mongo_controller.add_index(
+            "some other name", index_type, username, return_object=True
+        )
+
+        indexes_found = self.mongo_controller.get_indexes_by_type(index_type, username)
+
+        self.assertEqual(len(indexes_found), 2, "Both indexes should have been found")
+        self.assertEqual(
+            indexes_found,
+            [index_added_one, index_added_two],
+            "The correct indexes should have been found",
+        )
+
+    def test_get_indexes_by_type_many_types(self):
+        username = "some username"
+        index_type = IndexTypes.COMPANY.value
+        index_type_other = IndexTypes.BRANCH.value
+
+        index_added = self.mongo_controller.add_index(
+            "some name", index_type, username, return_object=True
+        )
+        index_added_other = self.mongo_controller.add_index(
+            "some other name", index_type_other, username, return_object=True
+        )
+
+        indexes_found = self.mongo_controller.get_indexes_by_type(index_type, username)
+
+        self.assertEqual(len(indexes_found), 1, "Only one index should have been found")
+        self.assertEqual(
+            indexes_found, [index_added], "The correct index should have been found"
+        )
+        self.assertNotIn(
+            index_added_other,
+            indexes_found,
+            "The other index should not have been found",
+        )

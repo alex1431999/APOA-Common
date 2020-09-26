@@ -2,36 +2,29 @@
 All twitter crawl result database functionality is defined in this module
 """
 from bson import ObjectId
+from datetime import datetime
+from pymongo.results import UpdateResult
 
 from common.mongo.data_types.crawling.crawl_results.twitter_result import TwitterResult
 from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
+from common.mongo.decorators.validation import validate_id
 
 
+@validate_id("keyword_id")
 def add_crawl_twitter(
     self,
-    keyword_id,
-    tweet_id,
-    text,
-    likes,
-    retweets,
-    timestamp,
+    keyword_id: ObjectId,
+    tweet_id: int,
+    text: str,
+    likes: int,
+    retweets: int,
+    timestamp: datetime,
     return_object=False,
     cast=False,
-):
+) -> UpdateResult:
     """
     Add a new twitter crawl to the crawl twitter collection
     If the tweet already exists, update the document
-
-    :param ObjectId keyword_id: The id of the target keyword used
-    :param long tweet_id: The id of the tweet provided by twitter
-    :param str text: The tweet text
-    :param int likes: The amount of likes the tweet has received
-    :param int retweets: The amount of retweets the tweet has received
-    :param date timestamp: The time the tweet was created
-    :param boolean return_object: If true return the updated object
-    :param boolean cast: If true cast the returned object to TwitterResult
-    :return: The update result
-    :rtype: UpdateResult
     """
     document = {
         "keyword_ref": keyword_id
@@ -57,14 +50,9 @@ def add_crawl_twitter(
     return update_result
 
 
-def get_crawl_twitter_by_id(self, tweet_id, cast=False):
+def get_crawl_twitter_by_id(self, tweet_id: int, cast=False):
     """
     Find a twitter result using the tweet id
-
-    :param long tweet_id: The id assigned to the tweet by twitter
-    :param boolean cast: If true cast the returned object to TwitterResult
-    :return: The twitter result found
-    :rtype: TwitterResult or None
     """
     pipeline = [
         {"$match": {"tweet_id": tweet_id}},

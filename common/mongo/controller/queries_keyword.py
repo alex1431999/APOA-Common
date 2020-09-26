@@ -1,22 +1,25 @@
 """
 All keyword database functionality is defined in this module
+
+TODO:
+    - Think about removing any access logic from this layer and only check permission on an api level
+        - This could allow you to permission a user if he is either directly or indirectly linked to the keyword
 """
 from bson import ObjectId
+from pymongo.results import UpdateResult
 
 from common import config
 from common.exceptions.parameters import UnsupportedLanguageError
 from common.mongo.data_types.keyword import Keyword
+from common.mongo.decorators.validation import validate_id
 
 
-def _set_deleted_flag(self, _id):
+@validate_id("_id")
+def _set_deleted_flag(self, _id: ObjectId):
     """
     Set the deleted flag of a keyword.
     This will usually be called after a keyword was altered
-
-    :param ObjectId _id: The ID of the target keyword
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
 
     keyword = self.get_keyword_by_id(_id, cast=True)
 
@@ -27,18 +30,15 @@ def _set_deleted_flag(self, _id):
 
 
 def add_keyword(
-    self, keyword_string, language, username, return_object=False, cast=False
+    self,
+    keyword_string: str,
+    language: str,
+    username: str,
+    return_object=False,
+    cast=False,
 ):
     """
     Add a new keyword document to the database
-
-    :param str keyword_string: The target keyword
-    :param str language: The language the keyword is written in
-    :param str username: The name of the user that is added to the keyword
-    :param boolean return_object: If true return the updated object
-    :param boolean cast: If true cast the returned object to Keyword
-    :return: The inserted document result
-    :rtype: InsertOneResult / UpdateOneResult
     """
     if language not in config.SUPPORTED_LANGUAGES:
         raise UnsupportedLanguageError(language)
@@ -61,6 +61,7 @@ def add_keyword(
             "keyword_string": keyword_string,
             "language": language,
             "users": [username],
+            "indexes": [],
             "deleted": False,
         }
 
@@ -72,16 +73,9 @@ def add_keyword(
     return result
 
 
-def get_keyword(self, keyword_string, language, username=None, cast=False):
+def get_keyword(self, keyword_string: str, language: str, username=None, cast=False):
     """
     Get a keyword object from the database
-
-    :param str keyword_string: The target keyword
-    :param str language: The language the keyword is written in
-    :param str username: There might be a username that requested this keyword
-    :param boolean cast: If true, cast the keyword dict to Keyword
-    :return: The found keyword
-    :rtype: Keyword or None
     """
     query = {"keyword_string": keyword_string, "language": language}
 
@@ -96,19 +90,13 @@ def get_keyword(self, keyword_string, language, username=None, cast=False):
     return keyword
 
 
-def get_keywords_user(self, username, cast=False):
+def get_keywords_user(self, username: str, cast=False):
     """
     Get the keywords of a particular username
-
-    :param str username: The username of the username
-    :param boolean cast: If True, cast all results to be of type Keyword
-    :return: All keywords that belong to a username
-    :rtype: List<Keyword> / List<dict>
     """
     query = {"users": username}
-    projection = {"_id": 1, "keyword_string": 1, "language": 1}
 
-    keywords = list(self.keywords_collection.find(query, projection))
+    keywords = list(self.keywords_collection.find(query))
 
     if cast:  # You might want have all of the keywords casted
         keywords = [Keyword.from_dict(mongo_result) for mongo_result in keywords]
@@ -116,19 +104,10 @@ def get_keywords_user(self, username, cast=False):
     return keywords
 
 
-def get_keyword_by_id(self, _id, username=None, cast=False):
+def get_keyword_by_id(self, _id: ObjectId, username=None, cast=False):
     """
     Get a keyword via its ID
-
-    :param ObjectId _id: The ID of the keyword
-    :param str username: The user who requests the keyword
-    :param boolean cast: If True, cast keyword to Keyword
-    :return: The Keyword found
-    :rtype: Keyword or Dict
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
-
     query = {"_id": _id}
 
     if username:
@@ -142,17 +121,11 @@ def get_keyword_by_id(self, _id, username=None, cast=False):
     return keyword
 
 
-def delete_keyword(self, _id, username):
+@validate_id("_id")
+def delete_keyword(self, _id: ObjectId, username: str) -> UpdateResult:
     """
     Delete a user from a keyword given the ID
-
-    :param ObjectId _id: The ID of the keyword
-    :param str username: The user who made the request
-    :return: The deletion
     """
-    if _id is not ObjectId:
-        _id = ObjectId(_id)
-
     query = {"_id": _id}
     update = {"$pull": {"users": username}}
 
@@ -183,5 +156,43 @@ def get_keywords_public(self, cast=False) -> list:
         keyword = self.get_keyword_by_id(_id, cast=cast)
         if keyword:
             keywords.append(keyword)
+
+    return keywords
+
+
+@validate_id(["keyword_id", "index_id"])
+def add_index_to_keyword(
+    self, keyword_id: ObjectId, index_id: ObjectId, return_object=False, cast=False
+):
+    query = {"_id": keyword_id}
+    update = {"$addToSet": {"indexes": index_id}}
+
+    self.keywords_collection.update_one(query, update)
+
+    if return_object:
+        return self.get_keyword_by_id(keyword_id, cast=cast)
+
+
+@validate_id(["keyword_id", "index_id"])
+def delete_index_from_keyword(
+    self, keyword_id: ObjectId, index_id: ObjectId, return_object=False, cast=False
+):
+    query = {"_id": keyword_id}
+    update = {"$pull": {"indexes": index_id}}
+
+    self.keywords_collection.update_one(query, update)
+
+    if return_object:
+        return self.get_keyword_by_id(keyword_id, cast=cast)
+
+
+@validate_id("index_id")
+def get_keywords_by_index(self, index_id: ObjectId, cast=False):
+    query = {"indexes": index_id}
+
+    keywords = list(self.keywords_collection.find(query))
+
+    if cast:
+        keywords = [Keyword.from_dict(mongo_result) for mongo_result in keywords]
 
     return keywords
