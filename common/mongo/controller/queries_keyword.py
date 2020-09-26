@@ -104,6 +104,7 @@ def get_keywords_user(self, username: str, cast=False):
     return keywords
 
 
+@validate_id("_id")
 def get_keyword_by_id(self, _id: ObjectId, username=None, cast=False):
     """
     Get a keyword via its ID
