@@ -42,8 +42,8 @@ class ValidateIdTests(ValidationTests):
 
 class ParseParameterTests(ValidationTests):
     def test_parse_parameter_str(self):
-        target_parameter = 'test'
-        param_names = ['hello', 'test']
+        target_parameter = "test"
+        param_names = ["hello", "test"]
         args = [1, 2]
 
         arg, position = parse_parameter(target_parameter, param_names, args, str)
@@ -52,8 +52,8 @@ class ParseParameterTests(ValidationTests):
         self.assertEqual(position, 1, "The correct arg position should have been found")
 
     def test_parse_parameter_object_id(self):
-        target_parameter = 'test'
-        param_names = ['hello', 'test']
+        target_parameter = "test"
+        param_names = ["hello", "test"]
         args = [str(ObjectId()), str(ObjectId())]
 
         arg, position = parse_parameter(target_parameter, param_names, args, ObjectId)
@@ -62,8 +62,8 @@ class ParseParameterTests(ValidationTests):
         self.assertEqual(position, 1, "The correct arg position should have been found")
 
     def test_parse_parameter_invalid_target(self):
-        target_parameter = 'not in the list'
-        param_names = ['hello', 'test']
+        target_parameter = "not in the list"
+        param_names = ["hello", "test"]
         args = [str(ObjectId()), str(ObjectId())]
 
         arg, position = parse_parameter(target_parameter, param_names, args, ObjectId)
@@ -72,7 +72,7 @@ class ParseParameterTests(ValidationTests):
         self.assertIsNone(position, "No arg should have been found")
 
     def test_parse_parameter_no_params(self):
-        target_parameter = 'not in the list'
+        target_parameter = "not in the list"
         param_names = []
         args = []
 

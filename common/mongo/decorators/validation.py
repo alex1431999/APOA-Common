@@ -35,11 +35,17 @@ def validate_id(target_parameters: any):
             param_names = inspect.getfullargspec(func)[0]
 
             # Make sure the target parameters is a list
-            target_parameters_validated = [target_parameters] if type(target_parameters) is str else target_parameters
+            target_parameters_validated = (
+                [target_parameters]
+                if type(target_parameters) is str
+                else target_parameters
+            )
 
             # parse
             for target_parameter in target_parameters_validated:
-                arg_parsed, position = parse_parameter(target_parameter, param_names, args, ObjectId)
+                arg_parsed, position = parse_parameter(
+                    target_parameter, param_names, args, ObjectId
+                )
 
                 if arg_parsed:
                     args[position] = arg_parsed
@@ -54,7 +60,9 @@ def validate_id(target_parameters: any):
     return validate_id_inner
 
 
-def parse_parameter(target_parameter: str, param_names: list, args: list, TargetType: any) -> any:
+def parse_parameter(
+    target_parameter: str, param_names: list, args: list, TargetType: any
+) -> any:
     # Find the parameter which should be validated
     position = None
     for i in range(len(param_names)):

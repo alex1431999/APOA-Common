@@ -164,7 +164,9 @@ def get_keywords_public(self, cast=False) -> list:
 
 
 @validate_id(["keyword_id", "index_id"])
-def add_index_to_keyword(self, keyword_id: ObjectId, index_id: ObjectId, return_object=False, cast=False):
+def add_index_to_keyword(
+    self, keyword_id: ObjectId, index_id: ObjectId, return_object=False, cast=False
+):
     query = {"_id": keyword_id}
     update = {"$addToSet": {"indexes": index_id}}
 
