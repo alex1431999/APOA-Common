@@ -18,7 +18,7 @@ if os.path.isfile(REQUIREMENTS_PATH):
 
 setuptools.setup(
     name="APOA-common",
-    version="0.2.0",
+    version="0.2.1",
     description="The library of all common functionality within the project",
     url="git@gitlab.com:alex1431999/final-year-project-common.git",
     author="Alexander Haller",
