@@ -48,9 +48,9 @@ class Index:
             dict_input["deleted"],
         )
 
-    def to_json(self) -> dict:
+    def to_json(self, cast_to_string_id=True) -> dict:
         return {
-            "_id": self._id if type(self._id) is not ObjectId else str(self._id),
+            "_id": str(self._id) if cast_to_string_id else ObjectId(self._id),
             "name": self.name,
             "users": self.users,
             "index_type": self.index_type,

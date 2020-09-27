@@ -10,7 +10,7 @@ from common.mongo.data_types.index import Index, IndexTypes
 
 @validate_id("_id")
 def get_index_by_id(self, _id: ObjectId, cast=False):
-    query = {"_id": str(_id)}
+    query = {"_id": _id}
 
     index = self.indexes_collection.find_one(query)
 

@@ -24,7 +24,7 @@ class QueriesIndexTests(QueryTests):
     def setUp(self) -> None:
         super().setUp()
         self.mongo_controller.indexes_collection.insert_one(
-            self.index_sample_inserted.to_json()
+            self.index_sample_inserted.to_json(cast_to_string_id=False)
         )
 
     def test_add_index_new_index(self):
