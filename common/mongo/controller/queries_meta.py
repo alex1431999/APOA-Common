@@ -28,3 +28,11 @@ def get_meta_keywords_public_ids(self) -> dict:
     meta = self.meta_collection.find_one(query, projection)
 
     return meta["keywords_public_ids"]
+
+
+def is_meta_initialised(self) -> bool:
+    query = {}
+
+    exists = self.meta_collection.find_one(query)
+
+    return True if exists else False

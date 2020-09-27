@@ -89,6 +89,7 @@ class MongoController:
     from common.mongo.controller.queries_meta import (
         set_meta_keywords_public_ids,
         get_meta_keywords_public_ids,
+        is_meta_initialised,
     )
 
     # Indexes
@@ -123,6 +124,9 @@ class MongoController:
 
         # By default use the default collection names
         self.set_collections()
+
+        # Configure the database
+        self.configure_database()
 
     def __str__(self):
         return 'Currently connected to "{}" using database "{}"'.format(

@@ -67,6 +67,7 @@ class Keyword:
             "language": self.language,
             "users": self.users,
             "indexes": self.indexes,
+            "deleted": self.deleted,
         }
 
     def __str__(self):

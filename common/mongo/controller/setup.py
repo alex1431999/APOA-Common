@@ -42,6 +42,10 @@ def configure_database(self):
     # Users collection
     self.users_collection.create_index([("username", ASCENDING)], unique=True)
 
+    # Initialise meta collection
+    if not self.is_meta_initialised():
+        self.set_meta_keywords_public_ids([])
+
 
 def create_collection_if_not_exists(self, collection_name):
     """
