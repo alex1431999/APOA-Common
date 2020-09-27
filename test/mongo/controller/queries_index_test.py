@@ -185,3 +185,45 @@ class QueriesIndexTests(QueryTests):
             indexes_found,
             "The other index should not have been found",
         )
+
+    def test_get_indexes_no_indexes(self):
+        indexes = self.mongo_controller.get_indexes("some unused username", cast=True)
+        self.assertEqual(indexes, [], "No index should have been found")
+
+    def test_get_indexes_one_index(self):
+        username = "some username"
+        index_created = self.mongo_controller.add_index(
+            "some name", IndexTypes.COMPANY.value, username, return_object=True
+        )
+
+        indexes = self.mongo_controller.get_indexes(username)
+
+        self.assertEqual(
+            indexes, [index_created], "The created index should have been returned"
+        )
+
+    def test_get_indexes_many_indexes(self):
+        username = "some username"
+        index_created_one = self.mongo_controller.add_index(
+            "index 1", IndexTypes.COMPANY.value, username, return_object=True
+        )
+        index_created_two = self.mongo_controller.add_index(
+            "index 2", IndexTypes.COMPANY.value, username, return_object=True
+        )
+        index_created_noise = self.mongo_controller.add_index(
+            "index noise",
+            IndexTypes.COMPANY.value,
+            "some other username",
+            return_object=True,
+        )
+
+        indexes = self.mongo_controller.get_indexes(username)
+
+        self.assertEqual(
+            indexes,
+            [index_created_one, index_created_two],
+            "The created indexes should have been returned",
+        )
+        self.assertNotIn(
+            index_created_noise, indexes, "The noise index should have been ignored"
+        )

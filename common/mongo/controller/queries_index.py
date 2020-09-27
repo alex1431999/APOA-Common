@@ -71,3 +71,14 @@ def get_indexes_by_type(self, index_type: IndexTypes, username: str, cast=False)
         indexes = [Index.from_dict(mongo_result) for mongo_result in indexes]
 
     return indexes
+
+
+def get_indexes(self, username: str, cast=False):
+    query = {"users": username}
+
+    indexes = list(self.indexes_collection.find(query))
+
+    if cast:
+        indexes = [Index.from_dict(mongo_result) for mongo_result in indexes]
+
+    return indexes
