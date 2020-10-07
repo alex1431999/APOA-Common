@@ -36,7 +36,7 @@ def configure_database(self):
     )
 
     # Crawls collection
-    self.crawls_collection.create_index([("tweet_id", ASCENDING)], unique=True)
+    self.crawls_collection.create_index([("tweet_id", ASCENDING)])
     self.crawls_collection.create_index([("crawl_type", ASCENDING)])
 
     # Users collection

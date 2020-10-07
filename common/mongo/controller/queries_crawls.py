@@ -11,7 +11,8 @@ Those attributes are:
 """
 import sys
 
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil import parser
 from bson import ObjectId
 
 from common.mongo.data_types.crawling.crawl_result import CrawlResult
@@ -128,7 +129,9 @@ def set_score_crawl(self, _id, score, return_object=False, cast=False):
 
 
 @validate_id("keyword_id")
-def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
+def get_crawls_plotting_data(
+    self, keyword_id: ObjectId, date_cutoff=None, granularity_in_minutes=60
+):
     """
     Gather all the crawls belonging to the given keyword id
     and transform the data such that it can be used to plot a graph
@@ -137,9 +140,6 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
     You could be more efficient by implementing the Accumulation of the scores piecewise
     in the mongo query. This seems to be quite the challenge and the for loop is just of O(N).
     Still an improvement worth making if this function slows down the process.
-
-    :param ObjectId keyword_id: The id of the target keyword
-    :param datetime date_cutoff: Only return plotting data up to that point in time
     """
     # Default date cutoff if none is provided
     if not date_cutoff:
@@ -153,13 +153,42 @@ def get_crawls_plotting_data(self, keyword_id, date_cutoff=None):
                 "timestamp": {"$gte": date_cutoff.isoformat()},
             },
         },
-        {"$project": {"_id": 0, "timestamp": 1, "score": 1, "text": 1,},},
+        {"$project": {"_id": 0, "timestamp": 1, "score": 1}},
         {"$sort": {"timestamp": 1},},
     ]
 
     plotting_data = list(self.crawls_collection.aggregate(pipeline))
 
-    return plotting_data
+    # Accumulate the data points
+    plotting_data_accumulated = []
+    if plotting_data:
+        accumulator = plotting_data[0]
+        accumulator["count"] = 1
+        cut_off = parser.parse(accumulator["timestamp"]) + timedelta(
+            minutes=granularity_in_minutes
+        )
+
+        for i in range(len(plotting_data)):
+            if i == 0:
+                continue
+            data = plotting_data[i]
+            if parser.parse(data["timestamp"]) <= cut_off:
+                accumulator["score"] += data["score"]
+                accumulator["count"] += 1
+            else:
+                accumulator["score"] = accumulator["score"] / accumulator["count"]
+                plotting_data_accumulated.append(accumulator)
+                accumulator = data
+                accumulator["count"] = 1
+                cut_off = parser.parse(accumulator["timestamp"]) + timedelta(
+                    minutes=granularity_in_minutes
+                )
+
+        if accumulator["count"] > 0:
+            accumulator["score"] = accumulator["score"] / accumulator["count"]
+            plotting_data_accumulated.append(accumulator)
+
+    return plotting_data_accumulated
 
 
 @validate_id("keyword_id")
