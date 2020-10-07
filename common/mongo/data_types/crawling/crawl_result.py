@@ -72,7 +72,7 @@ class CrawlResult:
             categories=dict_input["categories"],
         )
 
-    def to_json(self) -> dict:
+    def to_json(self, cast_to_string_id=True) -> dict:
         """
         Cast the object to JSON
 
@@ -94,6 +94,10 @@ class CrawlResult:
             else self.timestamp
         )
         result = json.loads(json.dumps(self.__dict__))
+
+        if not cast_to_string_id:
+            result["_id"] = ObjectId(result["_id"])
+            result["keyword_ref"] = ObjectId(result["keyword_ref"])
         self._id = ObjectId(self._id)
         self.keyword_ref = ObjectId(self.keyword_ref)
         return result

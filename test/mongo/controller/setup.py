@@ -37,3 +37,6 @@ class QueryTests(TestCase):
             self.keyword_sample.to_json(cast_to_string_id=False)
         )
         return self.keyword_sample
+
+    def load_crawls(self, crawls):
+        self.mongo_controller.crawls_collection.insert_many(crawls)
