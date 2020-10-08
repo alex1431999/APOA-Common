@@ -63,9 +63,10 @@ class QueriesCrawlsTests(QueryTests):
     def test_get_crawls_plotting_stress_test(self):
         granularity = 120
         offset = 2
+        amount_accumulated = 4
         keyword = self.keyword_sample
         crawls = generate_crawls(
-            keyword, 20000, time_difference=int(granularity / 2) + offset
+            keyword, 20000, time_difference=int(granularity / amount_accumulated) + offset
         )
         self.load_crawls(crawls)
 
@@ -75,6 +76,6 @@ class QueriesCrawlsTests(QueryTests):
 
         self.assertEqual(
             len(plotting_data),
-            int(len(crawls) / 2),
-            "every second crawl should have been accumulated",
+            int(len(crawls) / amount_accumulated),
+            "every x crawl should have been accumulated",
         )

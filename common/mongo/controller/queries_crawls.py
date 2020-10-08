@@ -10,7 +10,9 @@ Those attributes are:
     - language
 """
 import sys
+import math
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from dateutil import parser
 from bson import ObjectId
@@ -128,6 +130,35 @@ def set_score_crawl(self, _id, score, return_object=False, cast=False):
     return update_result
 
 
+def __accumulate_scores(plotting_data: list, granularity_in_minutes: int) -> list:
+    plotting_data_accumulated = []
+    if not plotting_data or len(plotting_data) == 0:
+        return plotting_data
+
+    accumulator = plotting_data[0]
+    cut_off = parser.parse(accumulator["timestamp"]) + timedelta(
+        minutes=granularity_in_minutes
+    )
+    for i in range(len(plotting_data)):
+        if i == 0:
+            continue
+        data = plotting_data[i]
+        if parser.parse(data["timestamp"]) <= cut_off:
+            accumulator["score"] = (accumulator["score"] * accumulator["count"] + data["score"] * data["count"]) / (accumulator["count"] + data["count"])
+            accumulator["count"] += data["count"]
+        else:
+            plotting_data_accumulated.append(accumulator)
+            accumulator = data
+            cut_off = parser.parse(accumulator["timestamp"]) + timedelta(
+                minutes=granularity_in_minutes
+            )
+
+    if accumulator["count"] > 0:
+        plotting_data_accumulated.append(accumulator)
+
+    return plotting_data_accumulated
+
+
 @validate_id("keyword_id")
 def get_crawls_plotting_data(
     self, keyword_id: ObjectId, date_cutoff=None, granularity_in_minutes=60
@@ -153,40 +184,30 @@ def get_crawls_plotting_data(
                 "timestamp": {"$gte": date_cutoff.isoformat()},
             },
         },
-        {"$project": {"_id": 0, "timestamp": 1, "score": 1}},
+        {"$project": {"_id": 0, "timestamp": 1, "score": 1, "count": {"$literal": 1}}},
         {"$sort": {"timestamp": 1},},
     ]
 
     plotting_data = list(self.crawls_collection.aggregate(pipeline))
 
-    # Accumulate the data points
+    thread_size = 1000
+    threads_amount = math.ceil(len(plotting_data) / thread_size)
+
+    futures = []
+    for i in range(threads_amount):
+        plotting_data_slice = plotting_data[i*thread_size: (i+1) * thread_size]
+
+        executor = ThreadPoolExecutor()
+        future = executor.submit(__accumulate_scores, plotting_data_slice, granularity_in_minutes)
+        futures.append({"future": future, "position": i})
+
+    results = [{"future": future["future"].result(), "position": future["position"]} for future in futures]
+
     plotting_data_accumulated = []
-    if plotting_data:
-        accumulator = plotting_data[0]
-        accumulator["count"] = 1
-        cut_off = parser.parse(accumulator["timestamp"]) + timedelta(
-            minutes=granularity_in_minutes
-        )
+    for result in results:
+        plotting_data_accumulated += result["future"]
 
-        for i in range(len(plotting_data)):
-            if i == 0:
-                continue
-            data = plotting_data[i]
-            if parser.parse(data["timestamp"]) <= cut_off:
-                accumulator["score"] += data["score"]
-                accumulator["count"] += 1
-            else:
-                accumulator["score"] = accumulator["score"] / accumulator["count"]
-                plotting_data_accumulated.append(accumulator)
-                accumulator = data
-                accumulator["count"] = 1
-                cut_off = parser.parse(accumulator["timestamp"]) + timedelta(
-                    minutes=granularity_in_minutes
-                )
-
-        if accumulator["count"] > 0:
-            accumulator["score"] = accumulator["score"] / accumulator["count"]
-            plotting_data_accumulated.append(accumulator)
+    plotting_data_accumulated = __accumulate_scores(plotting_data_accumulated, granularity_in_minutes)
 
     return plotting_data_accumulated
 
