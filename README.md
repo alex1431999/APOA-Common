@@ -1,4 +1,4 @@
-# APOAX Common
+# APOA Common
 ## Setup
 Make sure python 3.6 and virtualenv are installed.
 
