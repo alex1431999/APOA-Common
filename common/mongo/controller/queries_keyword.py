@@ -5,6 +5,7 @@ TODO:
     - Think about removing any access logic from this layer and only check permission on an api level
         - This could allow you to permission a user if he is either directly or indirectly linked to the keyword
 """
+from datetime import datetime
 from bson import ObjectId
 from pymongo.results import UpdateResult
 
@@ -195,5 +196,23 @@ def get_keywords_by_index(self, index_id: ObjectId, cast=False):
 
     if cast:
         keywords = [Keyword.from_dict(mongo_result) for mongo_result in keywords]
+
+    return keywords
+
+
+def get_outdated_keywords(self, timestamp: datetime, cast=False):
+    query = {"timestamp": {"$lte": timestamp.isoformat()}}
+    projection = {"keyword_ref": 1}
+
+    crawls_outdated = self.crawls_collection.find(query, projection)
+
+    keyword_ids_added = []
+    keywords = []
+    for crawl in crawls_outdated:
+        keyword_id = crawl["keyword_ref"]
+        if keyword_id not in keyword_ids_added:  # check for duplicates
+            keyword = self.get_keyword_by_id(keyword_id, cast=cast)
+            keywords.append(keyword)
+            keyword_ids_added.append(keyword_id)
 
     return keywords
