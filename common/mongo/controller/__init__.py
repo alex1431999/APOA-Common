@@ -45,6 +45,7 @@ class MongoController:
         add_index_to_keyword,
         delete_index_from_keyword,
         get_keywords_by_index,
+        get_outdated_keywords,
     )
 
     # Crawls

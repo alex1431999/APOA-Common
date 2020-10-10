@@ -7,7 +7,7 @@ from test.mongo.controller.setup import QueryTests
 
 
 def generate_crawls(
-    keyword: Keyword, amount: int, cast_to_json=True, time_difference=120
+    keyword: Keyword, amount: int, cast_to_json=False, time_difference=120
 ):
     crawls = [
         NewsResult(
@@ -66,7 +66,9 @@ class QueriesCrawlsTests(QueryTests):
         amount_accumulated = 4
         keyword = self.keyword_sample
         crawls = generate_crawls(
-            keyword, 20000, time_difference=int(granularity / amount_accumulated) + offset
+            keyword,
+            20000,
+            time_difference=int(granularity / amount_accumulated) + offset,
         )
         self.load_crawls(crawls)
 

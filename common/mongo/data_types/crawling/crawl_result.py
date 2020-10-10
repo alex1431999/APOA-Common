@@ -98,6 +98,7 @@ class CrawlResult:
         if not cast_to_string_id:
             result["_id"] = ObjectId(result["_id"])
             result["keyword_ref"] = ObjectId(result["keyword_ref"])
+
         self._id = ObjectId(self._id)
         self.keyword_ref = ObjectId(self.keyword_ref)
         return result

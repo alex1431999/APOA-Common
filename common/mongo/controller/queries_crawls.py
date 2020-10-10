@@ -144,7 +144,10 @@ def __accumulate_scores(plotting_data: list, granularity_in_minutes: int) -> lis
             continue
         data = plotting_data[i]
         if parser.parse(data["timestamp"]) <= cut_off:
-            accumulator["score"] = (accumulator["score"] * accumulator["count"] + data["score"] * data["count"]) / (accumulator["count"] + data["count"])
+            accumulator["score"] = (
+                accumulator["score"] * accumulator["count"]
+                + data["score"] * data["count"]
+            ) / (accumulator["count"] + data["count"])
             accumulator["count"] += data["count"]
         else:
             plotting_data_accumulated.append(accumulator)
@@ -195,19 +198,26 @@ def get_crawls_plotting_data(
 
     futures = []
     for i in range(threads_amount):
-        plotting_data_slice = plotting_data[i*thread_size: (i+1) * thread_size]
+        plotting_data_slice = plotting_data[i * thread_size : (i + 1) * thread_size]
 
         executor = ThreadPoolExecutor()
-        future = executor.submit(__accumulate_scores, plotting_data_slice, granularity_in_minutes)
+        future = executor.submit(
+            __accumulate_scores, plotting_data_slice, granularity_in_minutes
+        )
         futures.append({"future": future, "position": i})
 
-    results = [{"future": future["future"].result(), "position": future["position"]} for future in futures]
+    results = [
+        {"future": future["future"].result(), "position": future["position"]}
+        for future in futures
+    ]
 
     plotting_data_accumulated = []
     for result in results:
         plotting_data_accumulated += result["future"]
 
-    plotting_data_accumulated = __accumulate_scores(plotting_data_accumulated, granularity_in_minutes)
+    plotting_data_accumulated = __accumulate_scores(
+        plotting_data_accumulated, granularity_in_minutes
+    )
 
     return plotting_data_accumulated
 

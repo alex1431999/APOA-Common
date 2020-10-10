@@ -1,3 +1,4 @@
+from datetime import datetime
 from bson import ObjectId
 from random import randint
 
@@ -11,6 +12,9 @@ class QueriesKeywordTests(QueryTests):
     def setUp(self) -> None:
         super().setUp()
         self.load_sample_keyword()
+        self.load_keywords(
+            [self.keyword_crawl_outdated, self.keyword_crawl_outdated_two]
+        )
 
     def test_set_deleted_flag(self):
         self.mongo_controller.keywords_collection.update_one(
@@ -388,4 +392,48 @@ class QueriesKeywordTests(QueryTests):
         )
         self.assertEqual(
             keywords, keywords_found, "The correct keywords should have been found"
+        )
+
+    def test_get_outdated_keywords_no_crawls(self):
+        timestamp = datetime.now()
+        keywords = self.mongo_controller.get_outdated_keywords(timestamp)
+
+        self.assertEqual(keywords, [], "No keywords should have been found")
+
+    def test_get_outdated_keywords_one_crawl(self):
+        self.load_crawls([self.crawl_outdated])
+        timestamp = datetime.now()
+        keywords = self.mongo_controller.get_outdated_keywords(timestamp)
+
+        self.assertEqual(
+            keywords,
+            [self.keyword_crawl_outdated.to_json(cast_to_string_id=False)],
+            "Should have found the correct keyword",
+        )
+
+    def test_get_outdated_keywords_many_crawls(self):
+        self.load_crawls([self.crawl_outdated, self.crawl_outdated_two])
+        timestamp = datetime.now()
+        keywords = self.mongo_controller.get_outdated_keywords(timestamp)
+
+        self.assertEqual(
+            keywords,
+            [self.keyword_crawl_outdated.to_json(cast_to_string_id=False)],
+            "Should have found the correct keyword",
+        )
+
+    def test_get_outdated_keywords_many_keywords(self):
+        self.load_crawls(
+            [self.crawl_outdated, self.crawl_outdated_two, self.crawl_outdated_three]
+        )
+        timestamp = datetime.now()
+        keywords = self.mongo_controller.get_outdated_keywords(timestamp)
+
+        self.assertEqual(
+            keywords,
+            [
+                self.keyword_crawl_outdated.to_json(cast_to_string_id=False),
+                self.keyword_crawl_outdated_two.to_json(cast_to_string_id=False),
+            ],
+            "Should have found the correct keyword",
         )
