@@ -21,7 +21,11 @@ def add_user(self, username, password, is_hashed=False):
 
     today = datetime.now()  # Time of creation
 
-    document = {"username": username, "password": password, "created_at": today}
+    document = {
+        "username": username,
+        "password": password,
+        "created_at": today.isoformat(),
+    }
 
     return self.users_collection.insert_one(document)
 

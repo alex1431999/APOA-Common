@@ -18,7 +18,7 @@ def add_crawl_twitter(
     text: str,
     likes: int,
     retweets: int,
-    timestamp: datetime,
+    timestamp: str,
     return_object=False,
     cast=False,
 ) -> UpdateResult:
@@ -34,7 +34,7 @@ def add_crawl_twitter(
         "text": text,
         "likes": likes,
         "retweets": retweets,
-        "timestamp": timestamp,
+        "timestamp": str(timestamp),
         "crawl_type": CrawlTypes.TWITTER.value,
         "entities": [],
         "categories": [],

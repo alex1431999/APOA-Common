@@ -8,19 +8,16 @@ from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
 
 def add_crawl_nyt(
-    self, keyword_id, article_id, text, timestamp, return_object=False, cast=False
+    self,
+    keyword_id: ObjectId,
+    article_id: str,
+    text: str,
+    timestamp: str,
+    return_object=False,
+    cast=False,
 ):
     """
     Add a new nyt article to the crawl collection
-
-    :param ObjectId keyword_id: The ID of the keyword used to find the article
-    :param str article_id: The ID of the article provided by NYT
-    :param str text: The actual article content
-    :param date timestamp: The time the article was published
-    :param boolean return_object: If true return the updated object
-    :param boolean cast: If true cast the returned object to News
-    :return: The update result
-    :rtype: UpdateResult
     """
     document = {
         "keyword_ref": keyword_id
@@ -28,7 +25,7 @@ def add_crawl_nyt(
         else ObjectId(keyword_id),
         "article_id": article_id,
         "text": text,
-        "timestamp": timestamp,
+        "timestamp": str(timestamp),
         "crawl_type": CrawlTypes.NYT.value,
         "entities": [],
         "categories": [],

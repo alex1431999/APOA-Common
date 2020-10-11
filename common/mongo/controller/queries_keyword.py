@@ -201,7 +201,7 @@ def get_keywords_by_index(self, index_id: ObjectId, cast=False):
 
 
 def get_outdated_keywords(self, timestamp: datetime, cast=False):
-    query = {"timestamp": {"$lte": timestamp.isoformat()}}
+    query = {"timestamp": {"$lte": str(timestamp.isoformat())}}
     projection = {"keyword_ref": 1}
 
     crawls_outdated = self.crawls_collection.find(query, projection)

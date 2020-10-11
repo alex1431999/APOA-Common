@@ -11,20 +11,17 @@ from common.mongo.data_types.crawling.enums.crawl_types import CrawlTypes
 
 
 def add_crawl_news(
-    self, keyword_id, author, title, text, timestamp, return_object=False, cast=False
+    self,
+    keyword_id: ObjectId,
+    author: str,
+    title: str,
+    text: str,
+    timestamp: str,
+    return_object=False,
+    cast=False,
 ):
     """
     Add a new news article to the crawl collection
-
-    :param ObjectId keyword_id: The ID of the keyword used to find the article
-    :param str author: The author who has written the article
-    :param str title: The title of the articlerticle
-    :param str text: The actual article content
-    :param date timestamp: The time the article was published
-    :param boolean return_object: If true return the updated object
-    :param boolean cast: If true cast the returned object to News
-    :return: The update result
-    :rtype: UpdateResult
     """
     document = {
         "keyword_ref": keyword_id
@@ -33,7 +30,7 @@ def add_crawl_news(
         "author": author,
         "title": title,
         "text": text,
-        "timestamp": timestamp,
+        "timestamp": str(timestamp),
         "crawl_type": CrawlTypes.NEWS.value,
         "entities": [],
         "categories": [],
